@@ -12,11 +12,22 @@ error_reporting(E_ALL);
 $settings = NULL;
 require 'settings.php';
 
+session_start();
+
+// Check where we should redirect the user
+// after successful login
+if (isset($_SESSION['previous_url'])) {
+  $after_signin_url = $_SESSION['previous_url'];
+} else {
+  $after_signin_url = "http://$_SERVER[HTTP_HOST]";
+}
+
 $samlResponse = new OneLogin_Saml_Response($settings, $_POST['SAMLResponse']);
 
 try {
     if ($samlResponse->isValid()) {
         echo 'You are: ' . $samlResponse->getNameId() . '<br>';
+        echo 'After Signin Url: ' . $after_signin_url . '<br>';
         $attributes = $samlResponse->getAttributes();
         if (!empty($attributes)) {
             echo 'You have the following attributes:<br>';
