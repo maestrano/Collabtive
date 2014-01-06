@@ -65,10 +65,10 @@ class OneLogin_Saml_Response
         /** @var $entry DOMNode */
         foreach ($entries as $entry) {
             $attributeName = $entry->attributes->getNamedItem('Name')->nodeValue;
-
+            
             $attributeValues = array();
             foreach ($entry->childNodes as $childNode) {
-                if ($childNode->tagName === 'saml:AttributeValue'){
+                if (preg_match('/AttributeValue/',$childNode->tagName)){
                     $attributeValues[] = $childNode->nodeValue;
                 }
             }
