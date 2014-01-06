@@ -50,7 +50,7 @@ $settings->idpPublicCertificate = '01:06:15:89:25:7d:78:12:28:a6:69:c7:de:63:ed:
 // CERTIFICATE;
 
 // The URL where to the SAML Response/SAML Assertion will be posted
-$settings->spReturnUrl = 'http://localhost/php-saml/consume.php';
+$settings->spReturnUrl = 'http://localhost:8888/maestrano/auth/saml/consume.php';
 
 // Name of this application
 $settings->spIssuer = 'bla.app.dev.maestrano.io';
