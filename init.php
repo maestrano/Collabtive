@@ -57,6 +57,10 @@ if (isset($_SESSION["userid"])) {
     $template->assign("userpermissions", $userpermissions);
     $template->assign("loggedin", 1);
 } else {
+    // Store accessed url in session
+    $_SESSION['previous_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    
+    // Flag user as not logged in
     $template->assign("loggedin", 0);
 }
 // get system settings
