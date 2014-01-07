@@ -4,7 +4,7 @@
  * Properly format a User received from Maestrano 
  * SAML IDP
  */
-class MnoSsoUser
+class MnoSsoBaseUser
 {
   /**
    * User UID
@@ -37,8 +37,14 @@ class MnoSsoUser
   public $sso_session = '';
   
   /**
+   * User Local Id
+   * @var string
+   */
+  public $local_id = '';
+  
+  /**
    * When to recheck for validity of the sso session
    * @var datetime
    */
-  public $sso_session = '';
+  public $sso_session_recheck = new DateTime('NOW');
 }
