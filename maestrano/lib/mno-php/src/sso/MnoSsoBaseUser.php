@@ -151,6 +151,18 @@ class MnoSsoBaseUser
   }
   
   /**
+   * Create a local user based on the sso user
+   * This method must be re-implemented in MnoSsoUser
+   * (raise an error otherwise)
+   *
+   * @return a user ID if found, null otherwise
+   */
+  public function createLocalUser()
+  {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+  }
+  
+  /**
    * Get the ID of a local user via Maestrano UID lookup
    * This method must be re-implemented in MnoSsoUser
    * (raise an error otherwise)

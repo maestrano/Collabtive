@@ -208,6 +208,20 @@ CERTIFICATE;
     
     /**
      * @expectedException Exception
+     * @expectedExceptionMessage Function createLocalUser must be overriden in MnoSsoUser class!
+     */
+    public function testImplementationErrorForCreateLocalUser()
+    {
+        // Build user
+        $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+        $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+        
+        // Test that exception is raised
+        $sso_user->createLocalUser();
+    }
+    
+    /**
+     * @expectedException Exception
      * @expectedExceptionMessage Function _getLocalIdByUid must be overriden in MnoSsoUser class!
      */
     public function testImplementationErrorForGetLocalIdByUid()
