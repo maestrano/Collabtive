@@ -37,6 +37,12 @@ class MnoSsoBaseUser
   public $sso_session = '';
   
   /**
+   * When to recheck for validity of the sso session
+   * @var datetime
+   */
+  public $sso_session_recheck = null;
+  
+  /**
    * Is user owner of the app
    * @var boolean
    */
@@ -66,10 +72,4 @@ class MnoSsoBaseUser
    * @var string
    */
   public $local_id = '';
-  
-  /**
-   * When to recheck for validity of the sso session
-   * @var datetime
-   */
-  public $sso_session_recheck = new DateTime('NOW');
 }
