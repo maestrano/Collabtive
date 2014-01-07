@@ -97,4 +97,58 @@ class MnoSsoBaseUser
       $this->app_owner = $assert_attrs['app_owner'][0];
       $this->organizations = json_decode($assert_attrs['organizations'][0],true);
   }
+  
+  /**
+   * Try to find a local application user matching the sso one
+   * using uid first, then email address.
+   * If a user is found via email address then then setLocalUid
+   * is called to update the local user Maestrano UID
+   * ---
+   * Internally use the interface method:
+   *  - getLocalIdByUid
+   *  - getLocalIdByEmail
+   *  - setLocalUid
+   * 
+   * @return true if a local user matched, false otherwise
+   */
+  public function matchLocal()
+  {
+    
+  }
+  
+  /**
+   * Get the ID of a local user via Maestrano UID lookup
+   * This method must be re-implemented in MnoSsoUser
+   * (raise an error otherwise)
+   *
+   * @return a user ID if found, null otherwise
+   */
+  protected function _getLocalIdByUid($_uid)
+  {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+  }
+  
+  /**
+   * Get the ID of a local user via email lookup
+   * This method must be re-implemented in MnoSsoUser
+   * (raise an error otherwise)
+   *
+   * @return a user ID if found, null otherwise
+   */
+  protected function _getLocalIdByEmail($_email)
+  {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+  }
+  
+  /**
+   * Set the Maestrano UID on a local user via email lookup
+   * This method must be re-implemented in MnoSsoUser
+   * (raise an error otherwise)
+   *
+   * @return a user ID if found, null otherwise
+   */
+  protected function _setLocalUid($_id,$_uid)
+  {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+  }
 }

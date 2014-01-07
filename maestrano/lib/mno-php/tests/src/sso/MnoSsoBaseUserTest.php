@@ -46,13 +46,20 @@ CERTIFICATE;
       $this->_saml_settings = $settings;
     }
     
+    // Used to test protected methods
+    protected static function getMethod($name) {
+      $class = new ReflectionClass('MnoSsoBaseUser');
+      $method = $class->getMethod($name);
+      $method->setAccessible(true);
+      return $method;
+    }
+    
     public function testUserContruction()
     {
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $response = new OneLogin_Saml_Response($this->_saml_settings, $assertion);
         $response_attr = $response->getAttributes();
         $sso_user = new MnoSsoBaseUser($response);
-        echo $response_attr['mno_uid'][0];
         
         $this->assertEquals($sso_user->uid, $response_attr['mno_uid'][0]);
         $this->assertEquals($sso_user->sso_session, $response_attr['mno_session'][0]);
@@ -62,5 +69,50 @@ CERTIFICATE;
         $this->assertEquals($sso_user->surname, $response_attr['surname'][0]);
         $this->assertEquals($sso_user->app_owner, $response_attr['app_owner'][0]);
         $this->assertEquals($sso_user->organizations, json_decode($response_attr['organizations'][0],true));
+    }
+    
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage Function _getLocalIdByUid must be overriden in MnoSsoUser class!
+     */
+    public function testImplementationErrorForGetLocalIdByUid()
+    {
+        // Specify which protected method get tested
+        $protected_method = self::getMethod('_getLocalIdByUid');
+      
+        $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+        $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+        
+        $protected_method->invokeArgs($sso_user, array(1));
+    }
+    
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage Function _getLocalIdByEmail must be overriden in MnoSsoUser class!
+     */
+    public function testImplementationErrorForGetLocalIdByEmail()
+    {
+        // Specify which protected method get tested
+        $protected_method = self::getMethod('_getLocalIdByEmail');
+      
+        $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+        $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+        
+        $protected_method->invokeArgs($sso_user, array(1));
+    }
+    
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage Function _setLocalUid must be overriden in MnoSsoUser class!
+     */
+    public function testImplementationErrorForSetLocalUid()
+    {
+        // Specify which protected method get tested
+        $protected_method = self::getMethod('_setLocalUid');
+      
+        $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+        $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+        
+        $protected_method->invokeArgs($sso_user, array(1,$sso_user->uid));
     }
 }
