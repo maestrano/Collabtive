@@ -103,14 +103,14 @@ CERTIFICATE;
         $sso_user = new MnoSsoBaseUser($response);
         
         // Test user attributes have the right value
-        $this->assertEquals($sso_user->uid, $response_attr['mno_uid'][0]);
-        $this->assertEquals($sso_user->sso_session, $response_attr['mno_session'][0]);
-        $this->assertEquals($sso_user->sso_session_recheck, new DateTime($response_attr['mno_session_recheck'][0]));
-        $this->assertEquals($sso_user->email, $response_attr['email'][0]);
-        $this->assertEquals($sso_user->name, $response_attr['name'][0]);
-        $this->assertEquals($sso_user->surname, $response_attr['surname'][0]);
-        $this->assertEquals($sso_user->app_owner, $response_attr['app_owner'][0]);
-        $this->assertEquals($sso_user->organizations, json_decode($response_attr['organizations'][0],true));
+        $this->assertEquals($response_attr['mno_uid'][0], $sso_user->uid);
+        $this->assertEquals($response_attr['mno_session'][0], $sso_user->sso_session);
+        $this->assertEquals(new DateTime($response_attr['mno_session_recheck'][0]), $sso_user->sso_session_recheck);
+        $this->assertEquals($response_attr['email'][0], $sso_user->email);
+        $this->assertEquals($response_attr['name'][0], $sso_user->name);
+        $this->assertEquals($response_attr['surname'][0], $sso_user->surname);
+        $this->assertEquals($response_attr['app_owner'][0], $sso_user->app_owner);
+        $this->assertEquals(json_decode($response_attr['organizations'][0],true), $sso_user->organizations);
     }
     
     public function testFunctionMatchLocalWhenFoundByUid()
@@ -122,9 +122,9 @@ CERTIFICATE;
       
       // Test user has the right local_id
       $sso_user->matchLocal();
-      $this->assertEquals($sso_user->local_id,$sso_user->_stub_getLocalIdByUid);
-      $this->assertEquals($sso_user->_called_getLocalIdByEmail,0);
-      $this->assertEquals($sso_user->_called_setLocalUid,0);
+      $this->assertEquals($sso_user->_stub_getLocalIdByUid, $sso_user->local_id);
+      $this->assertEquals(0, $sso_user->_called_getLocalIdByEmail);
+      $this->assertEquals(0, $sso_user->_called_setLocalUid);
     }
     
     
@@ -137,9 +137,9 @@ CERTIFICATE;
       $sso_user->_stub_getLocalIdByEmail = 1236;
       
       // Test user has the right local_id
-      $this->assertEquals($sso_user->matchLocal(),$sso_user->_stub_getLocalIdByEmail);
-      $this->assertEquals($sso_user->local_id,$sso_user->_stub_getLocalIdByEmail);
-      $this->assertEquals($sso_user->_called_setLocalUid,1);
+      $this->assertEquals($sso_user->_stub_getLocalIdByEmail, $sso_user->matchLocal());
+      $this->assertEquals($sso_user->_stub_getLocalIdByEmail, $sso_user->local_id);
+      $this->assertEquals(1, $sso_user->_called_setLocalUid);
     }
     
     public function testFunctionMatchLocalWhenNotFound()
@@ -151,11 +151,11 @@ CERTIFICATE;
       $sso_user->_stub_getLocalIdByEmail = null;
       
       // Test user has the right local_id
-      $this->assertEquals($sso_user->matchLocal(),null);
-      $this->assertEquals($sso_user->local_id,null);
-      $this->assertEquals($sso_user->_called_getLocalIdByUid,1);
-      $this->assertEquals($sso_user->_called_getLocalIdByEmail,1);
-      $this->assertEquals($sso_user->_called_setLocalUid,0);
+      $this->assertEquals(null, $sso_user->matchLocal());
+      $this->assertEquals(null, $sso_user->local_id);
+      $this->assertEquals(1, $sso_user->_called_getLocalIdByUid);
+      $this->assertEquals(1, $sso_user->_called_getLocalIdByEmail);
+      $this->assertEquals(0, $sso_user->_called_setLocalUid);
     }
     
     public function testFunctionAccessScopeWhenUserFound()
@@ -166,7 +166,7 @@ CERTIFICATE;
       $sso_user->local_id = 1234;
       
       // Test that accessScope returns 'private'
-      $this->assertEquals($sso_user->accessScope(),'private');
+      $this->assertEquals('private', $sso_user->accessScope());
     }
     
     public function testFunctionAccessScopeWhenUserNotFoundButAppOwner()
@@ -178,7 +178,7 @@ CERTIFICATE;
       $sso_user->app_owner = true;
       
       // Test that accessScope returns 'private'
-      $this->assertEquals($sso_user->accessScope(),'private');
+      $this->assertEquals('private', $sso_user->accessScope());
     }
     
     public function testFunctionAccessScopeWhenUserNotFoundButInOrganization()
@@ -190,7 +190,7 @@ CERTIFICATE;
       $sso_user->organizations = array('org-xyz' => array('name' => 'AnOrga', 'role' => 'member'));
       
       // Test that accessScope returns 'private'
-      $this->assertEquals($sso_user->accessScope(),'private');
+      $this->assertEquals('private', $sso_user->accessScope());
     }
     
     public function testFunctionAccessScopeWhenUserNotFoundAndExternal()
@@ -203,7 +203,7 @@ CERTIFICATE;
       $sso_user->organizations = array();
       
       // Test that accessScope returns 'public'
-      $this->assertEquals($sso_user->accessScope(),'public');
+      $this->assertEquals('public', $sso_user->accessScope());
     }
     
     /**
