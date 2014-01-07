@@ -21,7 +21,8 @@ if (isset($_SESSION['previous_url'])) {
 } else {
   $after_signin_url = "http://$_SERVER[HTTP_HOST]";
 }
-
+error_log($_POST['SAMLResponse']);
+echo '<br>';
 $samlResponse = new OneLogin_Saml_Response($settings, $_POST['SAMLResponse']);
 
 try {
