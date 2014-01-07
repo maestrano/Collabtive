@@ -134,6 +134,23 @@ class MnoSsoBaseUser
   }
   
   /**
+   * Return whether the user is private (
+   * local account or app owner or part of
+   * organization owning this app) or public
+   * (no link whatsoever with this application)
+   *
+   * @return 'public' or 'private'
+   */
+  public function accessScope()
+  {
+    if ($this->local_id || $this->app_owner || count($this->organizations) > 0) {
+      return 'private';
+    }
+      
+    return 'public';
+  }
+  
+  /**
    * Get the ID of a local user via Maestrano UID lookup
    * This method must be re-implemented in MnoSsoUser
    * (raise an error otherwise)

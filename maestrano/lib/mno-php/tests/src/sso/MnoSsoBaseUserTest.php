@@ -158,6 +158,54 @@ CERTIFICATE;
       $this->assertEquals($sso_user->_called_setLocalUid,0);
     }
     
+    public function testFunctionAccessScopeWhenUserFound()
+    {
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = 1234;
+      
+      // Test that accessScope returns 'private'
+      $this->assertEquals($sso_user->accessScope(),'private');
+    }
+    
+    public function testFunctionAccessScopeWhenUserNotFoundButAppOwner()
+    {
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->app_owner = true;
+      
+      // Test that accessScope returns 'private'
+      $this->assertEquals($sso_user->accessScope(),'private');
+    }
+    
+    public function testFunctionAccessScopeWhenUserNotFoundButInOrganization()
+    {
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->organizations = array('org-xyz' => array('name' => 'AnOrga', 'role' => 'member'));
+      
+      // Test that accessScope returns 'private'
+      $this->assertEquals($sso_user->accessScope(),'private');
+    }
+    
+    public function testFunctionAccessScopeWhenUserNotFoundAndExternal()
+    {
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->app_owner = null;
+      $sso_user->organizations = array();
+      
+      // Test that accessScope returns 'public'
+      $this->assertEquals($sso_user->accessScope(),'public');
+    }
+    
     /**
      * @expectedException Exception
      * @expectedExceptionMessage Function _getLocalIdByUid must be overriden in MnoSsoUser class!
