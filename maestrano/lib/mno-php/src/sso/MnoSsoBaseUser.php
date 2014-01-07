@@ -197,4 +197,20 @@ class MnoSsoBaseUser
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }
+  
+  /**
+   * Sign the user in the application. By default,
+   * set the mno_uid, mno_session and mno_session_recheck
+   * in session.
+   * It is expected that this method get extended with
+   * application specific behavior in the MnoSsoUser class
+   *
+   * @return a user ID if found, null otherwise
+   */
+  public function signIn()
+  {
+    $_SESSION['mno_uid'] = $this->uid;
+    $_SESSION['mno_session'] = $this->sso_session;
+    $_SESSION['mno_session_recheck'] = $this->sso_session_recheck;
+  }
 }

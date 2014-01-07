@@ -206,6 +206,22 @@ CERTIFICATE;
       $this->assertEquals('public', $sso_user->accessScope());
     }
     
+    public function testFunctionSignIn()
+    {
+      // Build Session
+      $_SESSION = array();
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      
+      // Test that session variables have been set correctly
+      $sso_user->signIn();
+      $this->assertEquals($sso_user->uid, $_SESSION['mno_uid']);
+      $this->assertEquals($sso_user->sso_session, $_SESSION['mno_session']);
+      $this->assertEquals($sso_user->sso_session_recheck, $_SESSION['mno_session_recheck']);
+    }
+    
     /**
      * @expectedException Exception
      * @expectedExceptionMessage Function createLocalUser must be overriden in MnoSsoUser class!
