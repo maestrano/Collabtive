@@ -37,6 +37,31 @@ class MnoSsoBaseUser
   public $sso_session = '';
   
   /**
+   * Is user owner of the app
+   * @var boolean
+   */
+  public $app_owner = false;
+  
+  /**
+   * An associative array containing the Maestrano 
+   * organizations using this app and to which the
+   * user belongs.
+   * Keys are the maestrano organization uid.
+   * Values are an associative array containing the
+   * name of the organization as well as the role 
+   * of the user within that organization.
+   * ---
+   * e.g:
+   * { 'org-876' => {
+   *      'name' => 'SomeOrga',
+   *      'role' => 'Super Admin'
+   *   }
+   * }
+   * @var array
+   */
+  public $organizations = array();
+  
+  /**
    * User Local Id
    * @var string
    */
