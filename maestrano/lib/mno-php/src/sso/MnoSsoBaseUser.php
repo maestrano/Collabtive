@@ -104,10 +104,10 @@ class MnoSsoBaseUser
    * If a user is found via email address then then setLocalUid
    * is called to update the local user Maestrano UID
    * ---
-   * Internally use the interface method:
-   *  - getLocalIdByUid
-   *  - getLocalIdByEmail
-   *  - setLocalUid
+   * Internally use the following interface methods:
+   *  - _getLocalIdByUid
+   *  - _getLocalIdByEmail
+   *  - _setLocalUid
    * 
    * @return local_id if a local user matched, null otherwise
    */
