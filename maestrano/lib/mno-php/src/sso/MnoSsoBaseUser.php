@@ -71,7 +71,7 @@ class MnoSsoBaseUser
    * User Local Id
    * @var string
    */
-  public $local_id = '';
+  public $local_id = null;
   
   
   /**
@@ -109,11 +109,28 @@ class MnoSsoBaseUser
    *  - getLocalIdByEmail
    *  - setLocalUid
    * 
-   * @return true if a local user matched, false otherwise
+   * @return local_id if a local user matched, null otherwise
    */
   public function matchLocal()
   {
+    // Try to get the local id from uid
+    $lid = $this->_getLocalIdByUid($this->uid);
     
+    // Get local id via email if previous search
+    // was unsuccessful
+    if (is_null($lid)) {
+      $lid = $this->_getLocalIdByEmail($this->email);
+      
+      // Set Maestrano UID on user
+      if ($lid) {
+        $this->_setLocalUid($lid,$this->uid);
+      }
+    }
+    
+    // Assign local_id (can be null)
+    $this->local_id = $lid;
+    
+    return $lid;
   }
   
   /**

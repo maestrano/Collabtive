@@ -1,5 +1,37 @@
 <?php
 
+// Helper Class
+// Simulate user found by UID
+class MnoSsoUserFoundByUid extends MnoSsoBaseUser {
+  public $_stub_local_id = 1234;
+  
+  protected function _getLocalIdByUid($_uid) { 
+    return $this->_stub_local_id;
+  }
+}
+
+// Helper Class
+// Simulate user found by Email
+class MnoSsoUserFoundByEmail extends MnoSsoBaseUser {
+  public $_stub_local_id = 1234;
+  public $_called_setLocalUid = false;
+  
+  protected function _getLocalIdByUid($_uid) { 
+    return null;
+  }
+  
+  protected function _getLocalIdByEmail($_email) { 
+    return $this->_stub_local_id;
+  }
+  
+  protected function _setLocalUid($_id,$_uid)
+  {
+    $this->_called_setLocalUid = true;
+    return true;
+  }
+}
+
+// Class Test
 class MnoSsoBaseUserTest extends PHPUnit_Framework_TestCase
 {
     private $_saml_settings;
@@ -61,6 +93,7 @@ CERTIFICATE;
         $response_attr = $response->getAttributes();
         $sso_user = new MnoSsoBaseUser($response);
         
+        // Test user attributes have the right value
         $this->assertEquals($sso_user->uid, $response_attr['mno_uid'][0]);
         $this->assertEquals($sso_user->sso_session, $response_attr['mno_session'][0]);
         $this->assertEquals($sso_user->sso_session_recheck, new DateTime($response_attr['mno_session_recheck'][0]));
@@ -69,6 +102,30 @@ CERTIFICATE;
         $this->assertEquals($sso_user->surname, $response_attr['surname'][0]);
         $this->assertEquals($sso_user->app_owner, $response_attr['app_owner'][0]);
         $this->assertEquals($sso_user->organizations, json_decode($response_attr['organizations'][0],true));
+    }
+    
+    public function testFunctionMatchLocalWhenFoundByUid()
+    {
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUserFoundByUid(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      
+      // Test user has the right local_id
+      $sso_user->matchLocal();
+      $this->assertEquals($sso_user->local_id,$sso_user->_stub_local_id);
+    }
+    
+    
+    public function testFunctionMatchLocalWhenFoundByEmail()
+    {
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUserFoundByEmail(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      
+      // Test user has the right local_id
+      $this->assertEquals($sso_user->matchLocal(),$sso_user->_stub_local_id);
+      $this->assertEquals($sso_user->local_id,$sso_user->_stub_local_id);
+      $this->assertEquals($sso_user->_called_setLocalUid,true);
     }
     
     /**
