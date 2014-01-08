@@ -114,23 +114,20 @@ class MnoSsoBaseUser
   public function matchLocal()
   {
     // Try to get the local id from uid
-    $lid = $this->_getLocalIdByUid();
+    $this->local_id = $this->_getLocalIdByUid();
     
     // Get local id via email if previous search
     // was unsuccessful
-    if (is_null($lid)) {
-      $lid = $this->_getLocalIdByEmail();
+    if (is_null($this->local_id)) {
+      $this->local_id = $this->_getLocalIdByEmail();
       
       // Set Maestrano UID on user
-      if ($lid) {
+      if ($this->local_id) {
         $this->_setLocalUid();
       }
     }
     
-    // Assign local_id (can be null)
-    $this->local_id = $lid;
-    
-    return $lid;
+    return $this->local_id;
   }
   
   /**

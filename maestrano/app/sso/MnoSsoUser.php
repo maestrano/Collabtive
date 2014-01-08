@@ -43,4 +43,14 @@ class MnoSsoUser extends MnoSsoBaseUser
     
     return null;
   }
+  
+  /**
+   * Set the Maestrano UID on a local user via id lookup
+   *
+   * @return a user ID if found, null otherwise
+   */
+  protected function _setLocalUid()
+  {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+  }
 }
