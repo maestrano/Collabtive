@@ -27,6 +27,13 @@ class MnoSettings
     public $sso_return_url = '';
     
     /**
+     * The URL where the application should redirect if
+     * user is not given access.
+     * @var string
+     */
+    public $sso_access_unauthorized_url = '';
+    
+    /**
      * The x509 certificate used to authenticate the request.
      * @var string
      */

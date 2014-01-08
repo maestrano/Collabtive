@@ -9,6 +9,8 @@ $mno_settings->sso_url = 'http://localhost:3000/api/v1/auth/saml';
 
 $mno_settings->sso_return_url = 'http://localhost:8888/maestrano/auth/saml/consume.php';
 
+$mno_settings->sso_access_unauthorized_url = 'http://localhost:3000/app_access_unauthorized';
+
 $mno_settings->sso_x509_certificate = <<<CERTIFICATE
 -----BEGIN CERTIFICATE-----
 MIIDezCCAuSgAwIBAgIJAOehBr+YIrhjMA0GCSqGSIb3DQEBBQUAMIGGMQswCQYD
