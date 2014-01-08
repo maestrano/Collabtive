@@ -182,7 +182,16 @@ CERTIFICATE;
               ->with($this->equalTo(1),$this->equalTo($expected_id))
               ->will($this->returnValue(true));
       
+     // Create a connection stub
+     $pdo_stub = $this->getMock('PDOMock');
+     $pdo_stub->expects($this->once())
+               ->method('query')
+               ->with($this->equalTo("UPDATE user SET mno_uid = '$sso_user->uid' WHERE ID = $expected_id"))
+               ->will($this->returnValue(true));
+
+
       // Test method returns the right id
+      $sso_user->connection = $pdo_stub;
       $this->assertEquals($expected_id,$sso_user->createLocalUser());
     }
     
@@ -206,14 +215,23 @@ CERTIFICATE;
                ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->equalTo('123456789'))
                ->will($this->returnValue($expected_id));
                
-     // Create a roles stub
-     $sso_user->_roles = $this->getMock('roles');
-     $sso_user->_roles->expects($this->once())
+      // Create a roles stub
+      $sso_user->_roles = $this->getMock('roles');
+      $sso_user->_roles->expects($this->once())
               ->method('assign')
               ->with($this->equalTo(1),$this->equalTo($expected_id))
               ->will($this->returnValue(true));
       
+      // Create a connection stub
+      $pdo_stub = $this->getMock('PDOMock');
+      $pdo_stub->expects($this->once())
+               ->method('query')
+               ->with($this->equalTo("UPDATE user SET mno_uid = '$sso_user->uid' WHERE ID = $expected_id"))
+               ->will($this->returnValue(true));
+
+
       // Test method returns the right id
+      $sso_user->connection = $pdo_stub;
       $this->assertEquals($expected_id,$sso_user->createLocalUser());
     }
     
@@ -237,14 +255,23 @@ CERTIFICATE;
                ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->equalTo('123456789'))
                ->will($this->returnValue($expected_id));
                
-     // Create a roles stub
-     $sso_user->_roles = $this->getMock('roles');
-     $sso_user->_roles->expects($this->once())
+      // Create a roles stub
+      $sso_user->_roles = $this->getMock('roles');
+      $sso_user->_roles->expects($this->once())
               ->method('assign')
               ->with($this->equalTo(2),$this->equalTo($expected_id))
               ->will($this->returnValue(true));
       
+      // Create a connection stub
+      $pdo_stub = $this->getMock('PDOMock');
+      $pdo_stub->expects($this->once())
+               ->method('query')
+               ->with($this->equalTo("UPDATE user SET mno_uid = '$sso_user->uid' WHERE ID = $expected_id"))
+               ->will($this->returnValue(true));
+      
+      
       // Test method returns the right id
+      $sso_user->connection = $pdo_stub;
       $this->assertEquals($expected_id,$sso_user->createLocalUser());
     }
     

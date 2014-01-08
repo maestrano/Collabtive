@@ -99,8 +99,10 @@ class MnoSsoUser extends MnoSsoBaseUser
       $this->local_id = $this->_user->add("$this->name $this->surname", $this->email, '', '123456789');
       
       // Create role for new user
+      // and set local uid
       if ($this->local_id) {
         $this->_roles->assign($this->getRoleIdToAssign(), $this->local_id);
+        $this->_setLocalUid();
       }
     }
     
