@@ -57,6 +57,12 @@ class MnoSsoBaseUser
    * name of the organization as well as the role 
    * of the user within that organization.
    * ---
+   * List of Organization Roles
+   * - Member
+   * - Power User
+   * - Admin
+   * - Super Admin
+   * ---
    * e.g:
    * { 'org-876' => {
    *      'name' => 'SomeOrga',
