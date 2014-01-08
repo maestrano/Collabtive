@@ -13,5 +13,9 @@ require PHP_SAML_DIR . 'XmlSec.php';
 define('MNO_PHP_SSO_DIR', './../../lib/mno-php/src/sso/');
 require MNO_PHP_SSO_DIR . 'MnoSsoBaseUser.php';
 
+// Tested class: 
+define('TEST_INT_SSO_DIR', './../sso/');
+require TEST_INT_SSO_DIR . 'MnoSsoUser.php';
+
 // Set timezone
 date_default_timezone_set('UTC');
