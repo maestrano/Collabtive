@@ -15,9 +15,11 @@ class PDOMock extends PDO {
 class MnoSsoUserTest extends PHPUnit_Framework_TestCase
 {
     private $_saml_settings;
-
+    
     public function setUp()
     {
+      parent::setUp();
+      
       // Create SESSION
       $_SESSION = array();
       
@@ -244,5 +246,57 @@ CERTIFICATE;
       
       // Test method returns the right id
       $this->assertEquals($expected_id,$sso_user->createLocalUser());
+    }
+    
+    public function testFunctionSignIn()
+    {
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = 1234;
+      
+      // Create a roles stub
+      $sso_user->_roles = $this->getMock('roles');
+      $sso_user->_roles->expects($this->once())
+               ->method('getUserRole')
+               ->with($this->equalTo($sso_user->local_id))
+               ->will($this->returnValue(1));
+      
+      // Create a statement stub
+      $last_login = strtotime('-1 day');
+      $stmt_stub = $this->getMock('PDOStatement');
+      $stmt_stub->expects($this->once())
+                ->method('fetch')
+                ->will($this->returnValue(array(
+                  "ID" => $sso_user->local_id, 
+                  "name" => "$sso_user->name $sso_user->surname",
+                  "locale" => '',
+                  "lastlogin" => $last_login,
+                  "gender" => ''
+                  )));
+      
+      // Create a connection stub
+      $pdo_stub = $this->getMock('PDOMock');
+      $pdo_stub->expects($this->exactly(2))
+               ->method('query')
+               ->with($this->logicalOr(
+                        $this->equalTo("SELECT ID,name,locale,lastlogin,gender FROM user WHERE ID = $sso_user->local_id"),
+                        $this->logicalAnd(
+                          $this->stringContains("UPDATE user SET lastlogin ="),
+                          $this->stringContains("WHERE ID = $sso_user->local_id")
+                        )
+                      ))
+               ->will($this->returnValue($stmt_stub));
+               
+      // Test session variables
+      $sso_user->connection = $pdo_stub;
+      $sso_user->signIn();
+      
+      $this->assertEquals($sso_user->local_id, $_SESSION['userid']);
+      $this->assertEquals("$sso_user->name $sso_user->surname", $_SESSION['username']);
+      $this->assertGreaterThan($last_login, $_SESSION['lastlogin']);
+      $this->assertEquals('', $_SESSION['userlocale']);
+      $this->assertEquals('', $_SESSION['usergender']);
+      $this->assertEquals(1, $_SESSION["userpermissions"]);
     }
 }

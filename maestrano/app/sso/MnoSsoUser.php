@@ -45,6 +45,44 @@ class MnoSsoUser extends MnoSsoBaseUser
   
   
   /**
+   * Sign the user in the application. 
+   * Parent method deals with putting the mno_uid, 
+   * mno_session and mno_session_recheck in session.
+   *
+   * @return a user ID if found, null otherwise
+   */
+  public function signIn()
+  {
+    // First set $conn variable (used internally by collabtive methods)
+    $conn = $this->connection;
+    
+    $sel1 = $conn->query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE ID = $this->local_id");
+    $chk = $sel1->fetch();
+    if ($chk["ID"] != "") {
+        $now = time();
+        
+        // Set session
+        $_SESSION['userid'] = $chk['ID'];
+        $_SESSION['username'] = stripslashes($chk['name']);
+        $_SESSION['lastlogin'] = $now;
+        $_SESSION['userlocale'] = $chk['locale'];
+        $_SESSION['usergender'] = $chk['gender'];
+        $_SESSION["userpermissions"] = $this->_roles->getUserRole($chk["ID"]);
+        
+        // Update last login timestamp
+        $upd1 = $conn->query("UPDATE user SET lastlogin = '$now' WHERE ID = $this->local_id");
+        
+        // Call parent to set Maestrano session variables
+        parent::signIn();
+        
+        return true;
+    } else {
+        return false;
+    }
+  }
+  
+  
+  /**
    * Create a local user based on the sso user
    * if user can has access to the app (accessScope is 'private')
    * If null is returned then access is prevented
