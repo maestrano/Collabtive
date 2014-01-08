@@ -114,16 +114,16 @@ class MnoSsoBaseUser
   public function matchLocal()
   {
     // Try to get the local id from uid
-    $lid = $this->_getLocalIdByUid($this->uid);
+    $lid = $this->_getLocalIdByUid();
     
     // Get local id via email if previous search
     // was unsuccessful
     if (is_null($lid)) {
-      $lid = $this->_getLocalIdByEmail($this->email);
+      $lid = $this->_getLocalIdByEmail();
       
       // Set Maestrano UID on user
       if ($lid) {
-        $this->_setLocalUid($lid,$this->uid);
+        $this->_setLocalUid();
       }
     }
     
@@ -169,7 +169,7 @@ class MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _getLocalIdByUid($_uid)
+  protected function _getLocalIdByUid()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }
@@ -181,7 +181,7 @@ class MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _getLocalIdByEmail($_email)
+  protected function _getLocalIdByEmail()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }
@@ -193,7 +193,7 @@ class MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _setLocalUid($_id,$_uid)
+  protected function _setLocalUid()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }

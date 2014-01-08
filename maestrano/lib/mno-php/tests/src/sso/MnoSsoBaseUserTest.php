@@ -1,16 +1,6 @@
 <?php
 
 // Helper Class
-// Simulate user found by UID
-class MnoSsoUserFoundByUid extends MnoSsoBaseUser {
-  public $_stub_local_id = 1234;
-  
-  protected function _getLocalIdByUid($_uid) { 
-    return $this->_stub_local_id;
-  }
-}
-
-// Helper Class
 // Simulate implementation of MnoSsoUser
 class MnoSsoUserStub extends MnoSsoBaseUser {
   public $_stub_getLocalIdByUid = 1234;
@@ -21,19 +11,19 @@ class MnoSsoUserStub extends MnoSsoBaseUser {
   public $_called_getLocalIdByEmail = 0;
   public $_called_setLocalUid = 0;
   
-  protected function _getLocalIdByUid($_uid) 
+  protected function _getLocalIdByUid() 
   { 
     $this->_called_getLocalIdByUid++;
     return $this->_stub_getLocalIdByUid;
   }
   
-  protected function _getLocalIdByEmail($_email) 
+  protected function _getLocalIdByEmail() 
   { 
     $this->_called_getLocalIdByEmail++;
     return $this->_stub_getLocalIdByEmail;
   }
   
-  protected function _setLocalUid($_id,$_uid)
+  protected function _setLocalUid()
   {
     $this->_called_setLocalUid++;
     return $this->_stub_setLocalUid;
@@ -248,7 +238,7 @@ CERTIFICATE;
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
         
-        $protected_method->invokeArgs($sso_user, array(1));
+        $protected_method->invokeArgs($sso_user,array());
     }
     
     /**
@@ -263,7 +253,7 @@ CERTIFICATE;
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
         
-        $protected_method->invokeArgs($sso_user, array(1));
+        $protected_method->invokeArgs($sso_user,array());
     }
     
     /**
@@ -278,6 +268,6 @@ CERTIFICATE;
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
         
-        $protected_method->invokeArgs($sso_user, array(1,$sso_user->uid));
+        $protected_method->invokeArgs($sso_user,array());
     }
 }
