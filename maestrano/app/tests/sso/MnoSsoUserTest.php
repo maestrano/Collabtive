@@ -18,6 +18,9 @@ class MnoSsoUserTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+      // Create SESSION
+      $_SESSION = array();
+      
       $settings = new OneLogin_Saml_Settings;
       $settings->idpSingleSignOnUrl = 'http://localhost:3000/api/v1/auth/saml';
 
@@ -146,8 +149,106 @@ CERTIFICATE;
                ->will($this->returnValue(true));
                
       
-      // Test method returns the right id
+      // Test method returns true
       $sso_user->connection = $pdo_stub;
       $this->assertEquals(true,$protected_method->invokeArgs($sso_user,array()));
+    }
+    
+    public function testFunctionCreateLocalUserWhenAppOwner()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('_setLocalUid');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->app_owner = true;
+      
+      // Set expected_id
+      $expected_id = 1234;
+      
+      // Create a user stub
+      $sso_user->_user = $this->getMock('user');
+      $sso_user->_user->expects($this->once())
+               ->method('add')
+               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->equalTo('123456789'))
+               ->will($this->returnValue($expected_id));
+               
+     // Create a roles stub
+     $sso_user->_roles = $this->getMock('roles');
+     $sso_user->_roles->expects($this->once())
+              ->method('assign')
+              ->with($this->equalTo(1),$this->equalTo($expected_id))
+              ->will($this->returnValue(true));
+      
+      // Test method returns the right id
+      $this->assertEquals($expected_id,$sso_user->createLocalUser());
+    }
+    
+    public function testFunctionCreateLocalUserWhenOrgaAdmin()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('_setLocalUid');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->app_owner = false;
+      $sso_user->organizations = array('org-xyz' => array('name' => 'MyOrga', 'role' => 'Admin'));
+      
+      // Set expected_id
+      $expected_id = 1234;
+      
+      // Create a user stub
+      $sso_user->_user = $this->getMock('user');
+      $sso_user->_user->expects($this->once())
+               ->method('add')
+               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->equalTo('123456789'))
+               ->will($this->returnValue($expected_id));
+               
+     // Create a roles stub
+     $sso_user->_roles = $this->getMock('roles');
+     $sso_user->_roles->expects($this->once())
+              ->method('assign')
+              ->with($this->equalTo(1),$this->equalTo($expected_id))
+              ->will($this->returnValue(true));
+      
+      // Test method returns the right id
+      $this->assertEquals($expected_id,$sso_user->createLocalUser());
+    }
+    
+    public function testFunctionCreateLocalUserWhenNormal()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('_setLocalUid');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = null;
+      $sso_user->app_owner = false;
+      $sso_user->organizations = array('org-xyz' => array('name' => 'MyOrga', 'role' => 'Member'));
+      
+      // Set expected_id
+      $expected_id = 1234;
+      
+      // Create a user stub
+      $sso_user->_user = $this->getMock('user');
+      $sso_user->_user->expects($this->once())
+               ->method('add')
+               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->equalTo('123456789'))
+               ->will($this->returnValue($expected_id));
+               
+     // Create a roles stub
+     $sso_user->_roles = $this->getMock('roles');
+     $sso_user->_roles->expects($this->once())
+              ->method('assign')
+              ->with($this->equalTo(2),$this->equalTo($expected_id))
+              ->will($this->returnValue(true));
+      
+      // Test method returns the right id
+      $this->assertEquals($expected_id,$sso_user->createLocalUser());
     }
 }
