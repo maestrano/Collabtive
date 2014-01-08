@@ -19,10 +19,9 @@ session_start();
 if (isset($_SESSION['previous_url'])) {
   $after_signin_url = $_SESSION['previous_url'];
 } else {
-  $after_signin_url = "http://$_SERVER[HTTP_HOST]";
+  $after_signin_url = "http://$_SERVER[HTTP_HOST]/";
 }
 error_log($_POST['SAMLResponse']);
-echo '<br>';
 $samlResponse = new OneLogin_Saml_Response($mno_settings->getSamlSettings(), $_POST['SAMLResponse']);
 
 try {
@@ -38,17 +37,19 @@ try {
         // to create a new local user
         if (is_null($sso_user->local_id)) {
           $sso_user->createLocalUser();
-          echo 'Attempting to create new user <br/>';
+          //echo 'Attempting to create new user <br/>';
         }
         
         // If user is matched then sign it in
         // Refuse access otherwise
         if ($sso_user->local_id) {
-          echo 'Access Granted <br/>';
+          //echo 'Access Granted <br/>';
           $sso_user->signIn();
-          echo 'Signed In <br/>';
+          //echo 'Signed In <br/>';
+          header("Location: $after_signin_url");
         } else {
-          echo 'Access Refused <br/>';
+          //echo 'Access Refused <br/>';
+          header("Location: $mno_settings->sso_access_unauthorized_url");
         }
         echo '<br/><br/>';
         
