@@ -156,8 +156,6 @@ CERTIFICATE;
     
     public function testFunctionCreateLocalUserWhenAppOwner()
     {
-      // Specify which protected method get tested
-      $protected_method = self::getMethod('_setLocalUid');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -188,8 +186,6 @@ CERTIFICATE;
     
     public function testFunctionCreateLocalUserWhenOrgaAdmin()
     {
-      // Specify which protected method get tested
-      $protected_method = self::getMethod('_setLocalUid');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -221,8 +217,6 @@ CERTIFICATE;
     
     public function testFunctionCreateLocalUserWhenNormal()
     {
-      // Specify which protected method get tested
-      $protected_method = self::getMethod('_setLocalUid');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
