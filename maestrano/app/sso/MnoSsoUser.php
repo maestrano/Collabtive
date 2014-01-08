@@ -19,7 +19,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    */
   protected function _getLocalIdByUid()
   {
-    $result = $this->connection->query("SELECT ID FROM user WHERE mno_uid = '$this->uid' LIMIT 1")->fetch();
+    $result = $this->connection->query("SELECT ID FROM user WHERE mno_uid = {$this->connection->quote($this->uid)} LIMIT 1")->fetch();
     
     if ($result && $result['ID']) {
       return $result['ID'];
@@ -35,7 +35,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    */
   protected function _getLocalIdByEmail()
   {
-    $result = $this->connection->query("SELECT ID FROM user WHERE email = '$this->email' LIMIT 1")->fetch();
+    $result = $this->connection->query("SELECT ID FROM user WHERE email = {$this->connection->quote($this->email)} LIMIT 1")->fetch();
     
     if ($result && $result['ID']) {
       return $result['ID'];

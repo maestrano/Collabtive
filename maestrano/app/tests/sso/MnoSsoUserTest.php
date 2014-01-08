@@ -3,6 +3,12 @@
 // Class helper for database connection
 class PDOMock extends PDO {
     public function __construct() {}
+    
+    // Make it final to avoid stubbing
+    public final function quote($arg)
+    {
+      return "'$arg'";
+    }
 }
 
 // Class Test
