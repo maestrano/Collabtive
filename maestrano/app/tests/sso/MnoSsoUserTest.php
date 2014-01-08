@@ -138,22 +138,16 @@ CERTIFICATE;
       $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
       $sso_user->local_id = 1234;
       
-      // Create a statement stub
-      $stmt_stub = $this->getMock('PDOStatement');
-      $stmt_stub->expects($this->once())
-                ->method('fetch')
-                ->will($this->returnValue(true));
-      
       // Create a connection stub
       $pdo_stub = $this->getMock('PDOMock');
       $pdo_stub->expects($this->once())
                ->method('query')
                ->with($this->equalTo("UPDATE user SET mno_uid = '$sso_user->uid' WHERE ID = $sso_user->local_id"))
-               ->will($this->returnValue($stmt_stub));
+               ->will($this->returnValue(true));
                
       
       // Test method returns the right id
       $sso_user->connection = $pdo_stub;
-      $this->assertEquals($expected_id,$protected_method->invokeArgs($sso_user,array()));
+      $this->assertEquals(true,$protected_method->invokeArgs($sso_user,array()));
     }
 }

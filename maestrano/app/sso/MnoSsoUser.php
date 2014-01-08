@@ -51,6 +51,11 @@ class MnoSsoUser extends MnoSsoBaseUser
    */
   protected function _setLocalUid()
   {
-    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+    if($this->local_id) {
+      $upd = $this->connection->query("UPDATE user SET mno_uid = {$this->connection->quote($this->uid)} WHERE ID = $this->local_id");
+      return $upd;
+    }
+    
+    return false;
   }
 }
