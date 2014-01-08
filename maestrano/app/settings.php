@@ -32,3 +32,5 @@ MPgV0CpumKRMulOeZwdpnyLQI/NTr3VVHhDDxxCzcB0zlZ2xyDACGnIG2cQJJxfc
 Rkjkjqy+H7vir/MOF3rlFjiv5twAbDKYHXDT7v1YCg==
 -----END CERTIFICATE-----
 CERTIFICATE;
+
+return $mno_settings;

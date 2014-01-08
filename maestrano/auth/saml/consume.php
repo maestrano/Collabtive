@@ -9,8 +9,8 @@
 
 error_reporting(E_ALL);
 
-$settings = NULL;
-require 'settings.php';
+$mno_settings = NULL;
+require '../../app/init/auth.php';
 
 session_start();
 
@@ -23,7 +23,7 @@ if (isset($_SESSION['previous_url'])) {
 }
 error_log($_POST['SAMLResponse']);
 echo '<br>';
-$samlResponse = new OneLogin_Saml_Response($settings, $_POST['SAMLResponse']);
+$samlResponse = new OneLogin_Saml_Response($mno_settings->getSamlSettings(), $_POST['SAMLResponse']);
 
 try {
     if ($samlResponse->isValid()) {
