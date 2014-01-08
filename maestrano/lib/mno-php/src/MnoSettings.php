@@ -59,7 +59,7 @@ class MnoSettings
       $settings->idpPublicCertificate = $this->sso_x509_certificate;
       $settings->spReturnUrl = $this->sso_return_url;
       $settings->spIssuer = $this->app_name;
-      $settings->requestedNameIdFormat = $sso_name_id_format;
+      $settings->requestedNameIdFormat = $this->sso_name_id_format;
       
       return $settings;
     }
