@@ -27,6 +27,31 @@ $samlResponse = new OneLogin_Saml_Response($mno_settings->getSamlSettings(), $_P
 
 try {
     if ($samlResponse->isValid()) {
+        
+        // Get Maestrano User
+        $sso_user = new MnoSsoUser($samlResponse, $conn);
+        
+        // Try to match the user with a local one
+        $sso_user->matchLocal();
+        
+        // If user was not matched then attempt
+        // to create a new local user
+        if (is_null($sso_user->local_id)) {
+          $sso_user->createLocalUser();
+          echo 'Attempting to create new user <br/>';
+        }
+        
+        // If user is matched then sign it in
+        // Refuse access otherwise
+        if ($sso_user->local_id) {
+          echo 'Access Granted <br/>';
+          $sso_user->signIn();
+          echo 'Signed In <br/>';
+        } else {
+          echo 'Access Refused <br/>';
+        }
+        echo '<br/><br/>';
+        
         echo 'You are: ' . $samlResponse->getNameId() . '<br>';
         echo 'After Signin Url: ' . $after_signin_url . '<br>';
         $attributes = $samlResponse->getAttributes();
@@ -42,6 +67,7 @@ try {
             }
             echo '</tbody></table>';
         }
+        echo var_dump($_SESSION);
     }
     else {
         echo 'Invalid SAML response.';
