@@ -3,7 +3,6 @@
 // Define root folder
 //-----------------------------------------------
 define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
-echo MAESTRANO_ROOT; 
 
 //-----------------------------------------------
 // Load Libraries & Settings
