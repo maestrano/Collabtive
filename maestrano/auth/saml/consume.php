@@ -19,7 +19,7 @@ session_start();
 if (isset($_SESSION['mno_previous_url'])) {
   $after_signin_url = $_SESSION['mno_previous_url'];
 } else {
-  $after_signin_url = "http://$_SERVER[HTTP_HOST]/";
+  $after_signin_url = "/";
 }
 error_log($_POST['SAMLResponse']);
 $samlResponse = new OneLogin_Saml_Response($mno_settings->getSamlSettings(), $_POST['SAMLResponse']);

@@ -1,4 +1,7 @@
 <?php
+// Get full host (protocal + server host)
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
+$full_host = $protocol . $_SERVER['HTTP_HOST'];
 
 // Configure Maestrano API
 $mno_settings = new MnoSettings();
@@ -11,9 +14,9 @@ $mno_settings->sso_url = 'http://localhost:3000/api/v1/auth/saml';
 
 $mno_settings->sso_session_check_url = 'http://localhost:3000/api/v1/auth/saml';
 
-$mno_settings->sso_init_url = 'http://localhost:8888/maestrano/auth/saml/index.php';
+$mno_settings->sso_init_url = $full_host . '/maestrano/auth/saml/index.php';
 
-$mno_settings->sso_return_url = 'http://localhost:8888/maestrano/auth/saml/consume.php';
+$mno_settings->sso_return_url = $full_host . '/maestrano/auth/saml/consume.php';
 
 $mno_settings->sso_access_unauthorized_url = 'http://localhost:3000/app_access_unauthorized';
 
