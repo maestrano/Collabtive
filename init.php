@@ -23,6 +23,12 @@ if (!empty($db_name) and !empty($db_user)) {
     $conn = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 }
+
+// Load Maestrano session
+if ($maestrano_enabled) {
+  require CL_ROOT . '/maestrano/app/init/session.php';
+}
+
 // Start template engine
 $template = new Smarty();
 // STOP smarty from spewing notices all over the html code
@@ -35,6 +41,9 @@ $template->assign("url", $url);
 $template->assign("languages", $languages);
 $template->assign("myversion", "1.1");
 $template->assign("cl_config", CL_CONFIG);
+
+
+
 // Assign globals to all templates
 if (isset($_SESSION["userid"])) {
     // unique ID of the user
@@ -56,9 +65,17 @@ if (isset($_SESSION["userid"])) {
     $template->assign("usergender", $gender);
     $template->assign("userpermissions", $userpermissions);
     $template->assign("loggedin", 1);
+    
+    // Check Maestrano session is still valid
+    if ($mno_settings && $mno_settings->sso_enabled && $mno_session) {
+      if (!$mno_session->isValid()) {
+        header("Location: " . $mno_settings->sso_init_url);
+      }
+    }
 } else {
-    // Store accessed url in session
-    $_SESSION['previous_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    if ($mno_settings && $mno_settings->sso_enabled) {
+      header("Location: " . $mno_settings->sso_init_url);
+    }
     
     // Flag user as not logged in
     $template->assign("loggedin", 0);
