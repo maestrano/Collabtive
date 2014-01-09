@@ -45,11 +45,11 @@ class MnoSsoSession
    *   A session object, usually $_SESSION
    *
    */
-  public function __construct(MnoSettings $mno_settings,$session)
+  public function __construct(MnoSettings $mno_settings,&$session)
   {
       // Populate attributes from params
       $this->settings = $mno_settings;
-      $this->session = $session;
+      $this->session = & $session;
       $this->uid = $session['mno_uid'];
       $this->token = $session['mno_session'];
       $this->recheck = $session['mno_session_recheck'];
@@ -112,4 +112,26 @@ class MnoSsoSession
        
        return false;
      }
+     
+     /**
+      * Perform check to see if session is valid
+      * Check is only performed if current time is after
+      * the recheck timestamp
+      * If a remote check is performed then the mno_session_recheck
+      * timestamp is updated in session.
+      *
+      * @return boolean the validity of the session
+      */
+      public function isValid() {
+        if ($this->remoteCheckRequired()) {
+          if ($this->performRemoteCheck()) {
+            $this->session['mno_session_recheck'] = $this->recheck;
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return true;
+        }
+      }
 }

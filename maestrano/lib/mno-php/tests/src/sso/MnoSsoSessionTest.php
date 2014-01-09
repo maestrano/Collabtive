@@ -65,7 +65,7 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
     {
       // Build object via mocking (need stubbing for fetchUrl)
       $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
-      $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, $session));
+      $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, &$session));
       
       // Stub remote content
       $remote_content = '{"valid":true,"recheck":"2014-01-09T03:36:15Z"}';
@@ -82,7 +82,7 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
     {
       // Build object via mocking (need stubbing for fetchUrl)
       $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
-      $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, $session));
+      $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, &$session));
       
       // Stub remote content
       $remote_content = '{"valid":false,"recheck":"2014-01-09T03:36:15Z"}';
@@ -94,5 +94,40 @@ class MnoSsoSessionTest extends PHPUnit_Framework_TestCase
       $recheck_before = $mno_session->recheck;
       $this->assertEquals(false,$mno_session->performRemoteCheck());
       $this->assertEquals($recheck_before, $mno_session->recheck);
+    }
+    
+    public function testFunctionIsValidWhenSessionValid()
+    {
+      // Build object via mocking (need stubbing for fetchUrl)
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
+      $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, &$session));
+      
+      // Stub remote content
+      $remote_content = '{"valid":true,"recheck":"2014-01-09T03:36:15Z"}';
+      $mno_session->expects($this->once())
+                  ->method('fetchUrl')
+                  ->will($this->returnValue($remote_content));
+                  
+      // Test return value and recheck attribute
+      $this->assertEquals(true,$mno_session->isValid());
+      $this->assertEquals(new DateTime('2014-01-09T03:36:15Z'), $session['mno_session_recheck']);
+    }
+    
+    public function testFunctionIsValidWhenSessionInvalid()
+    {
+      // Build object via mocking (need stubbing for fetchUrl)
+      $session = array('mno_uid' => 'usr-xyz', 'mno_session' => '1dsf23sd', 'mno_session_recheck' => new DateTime());
+      $mno_session = $this->getMock('MnoSsoSession', array('fetchUrl'), array($this->_mno_settings, &$session));
+      
+      // Stub remote content
+      $remote_content = '{"valid":false,"recheck":"2014-01-09T03:36:15Z"}';
+      $mno_session->expects($this->once())
+                  ->method('fetchUrl')
+                  ->will($this->returnValue($remote_content));
+                  
+      // Test return value and recheck attribute
+      $recheck_before = $session['mno_session_recheck'];
+      $this->assertEquals(false,$mno_session->isValid());
+      $this->assertEquals($recheck_before, $session['mno_session_recheck']);
     }
 }
