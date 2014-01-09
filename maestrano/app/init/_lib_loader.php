@@ -19,6 +19,7 @@ require PHP_SAML_DIR . 'XmlSec.php';
 define('MNO_PHP_DIR', MAESTRANO_ROOT . '/lib/mno-php/src/');
 require MNO_PHP_DIR . '/MnoSettings.php';
 require MNO_PHP_DIR . '/sso/MnoSsoBaseUser.php';
+require MNO_PHP_DIR . '/sso/MnoSsoSession.php';
 
 //-----------------------------------------------
 // Require Maestrano app files
