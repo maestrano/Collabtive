@@ -49,9 +49,9 @@ class MnoSsoUser extends MnoSsoBaseUser
    * Parent method deals with putting the mno_uid, 
    * mno_session and mno_session_recheck in session.
    *
-   * @return a user ID if found, null otherwise
+   * @return boolean whether the user was successfully set in session or not
    */
-  public function signIn()
+  protected function _setInSession()
   {
     // First set $conn variable (used internally by collabtive methods)
     $conn = $this->connection;
@@ -71,9 +71,6 @@ class MnoSsoUser extends MnoSsoBaseUser
         
         // Update last login timestamp
         $upd1 = $conn->query("UPDATE user SET lastlogin = '$now' WHERE ID = $this->local_id");
-        
-        // Call parent to set Maestrano session variables
-        parent::signIn();
         
         return true;
     } else {

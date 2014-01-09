@@ -215,12 +215,27 @@ class MnoSsoBaseUser
    * It is expected that this method get extended with
    * application specific behavior in the MnoSsoUser class
    *
-   * @return a user ID if found, null otherwise
+   * @return boolean whether the user was successfully signedIn or not
    */
   public function signIn()
   {
-    $this->session['mno_uid'] = $this->uid;
-    $this->session['mno_session'] = $this->sso_session;
-    $this->session['mno_session_recheck'] = $this->sso_session_recheck;
+    if ($this->_setInSession()) {
+      $this->session['mno_uid'] = $this->uid;
+      $this->session['mno_session'] = $this->sso_session;
+      $this->session['mno_session_recheck'] = $this->sso_session_recheck;
+    }
   }
+  
+  /**
+   * Set user in session. Called by signIn method.
+   * This method should be overriden in MnoSsoUser to
+   * reflect the app specific way of putting an authenticated
+   * user in session.
+   *
+   * @return boolean whether the user was successfully set in session or not
+   */
+   protected function _setInSession()
+   {
+     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+   }
 }
