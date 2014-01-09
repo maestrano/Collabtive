@@ -36,7 +36,7 @@ try {
         // If user was not matched then attempt
         // to create a new local user
         if (is_null($sso_user->local_id)) {
-          $sso_user->createLocalUser();
+          $sso_user->createLocalUserOrDenyAccess();
           //echo 'Attempting to create new user <br/>';
         }
         

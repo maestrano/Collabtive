@@ -158,6 +158,8 @@ CERTIFICATE;
     
     public function testFunctionCreateLocalUserWhenAppOwner()
     {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('_createLocalUser');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -181,22 +183,18 @@ CERTIFICATE;
               ->method('assign')
               ->with($this->equalTo(1),$this->equalTo($expected_id))
               ->will($this->returnValue(true));
-      
-     // Create a connection stub
-     $pdo_stub = $this->getMock('PDOMock');
-     $pdo_stub->expects($this->once())
-               ->method('query')
-               ->with($this->equalTo("UPDATE user SET mno_uid = '$sso_user->uid' WHERE ID = $expected_id"))
-               ->will($this->returnValue(true));
 
 
       // Test method returns the right id
       $sso_user->connection = $pdo_stub;
-      $this->assertEquals($expected_id,$sso_user->createLocalUser());
+      $this->assertEquals($expected_id,$protected_method->invokeArgs($sso_user,array()));
     }
     
     public function testFunctionCreateLocalUserWhenOrgaAdmin()
     {
+      
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('_createLocalUser');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -221,22 +219,17 @@ CERTIFICATE;
               ->method('assign')
               ->with($this->equalTo(1),$this->equalTo($expected_id))
               ->will($this->returnValue(true));
-      
-      // Create a connection stub
-      $pdo_stub = $this->getMock('PDOMock');
-      $pdo_stub->expects($this->once())
-               ->method('query')
-               ->with($this->equalTo("UPDATE user SET mno_uid = '$sso_user->uid' WHERE ID = $expected_id"))
-               ->will($this->returnValue(true));
 
 
       // Test method returns the right id
       $sso_user->connection = $pdo_stub;
-      $this->assertEquals($expected_id,$sso_user->createLocalUser());
+      $this->assertEquals($expected_id,$protected_method->invokeArgs($sso_user,array()));
     }
     
     public function testFunctionCreateLocalUserWhenNormal()
     {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('_createLocalUser');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -262,17 +255,10 @@ CERTIFICATE;
               ->with($this->equalTo(2),$this->equalTo($expected_id))
               ->will($this->returnValue(true));
       
-      // Create a connection stub
-      $pdo_stub = $this->getMock('PDOMock');
-      $pdo_stub->expects($this->once())
-               ->method('query')
-               ->with($this->equalTo("UPDATE user SET mno_uid = '$sso_user->uid' WHERE ID = $expected_id"))
-               ->will($this->returnValue(true));
-      
       
       // Test method returns the right id
       $sso_user->connection = $pdo_stub;
-      $this->assertEquals($expected_id,$sso_user->createLocalUser());
+      $this->assertEquals($expected_id,$protected_method->invokeArgs($sso_user,array()));
     }
     
     public function testFunctionSignIn()

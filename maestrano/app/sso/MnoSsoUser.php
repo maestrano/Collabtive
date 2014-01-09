@@ -80,30 +80,30 @@ class MnoSsoUser extends MnoSsoBaseUser
   
   
   /**
-   * Create a local user based on the sso user
-   * if user can has access to the app (accessScope is 'private')
-   * If null is returned then access is prevented
+   * Used by createLocalUserOrDenyAccess to create a local user 
+   * based on the sso user.
+   * If the method returns null then access is denied
    *
    * @return the ID of the user created, null otherwise
    */
-  public function createLocalUser()
+  public function _createLocalUser()
   {
-    if (is_null($this->local_id) && $this->accessScope() == 'private') {
+    $lid = null;
+    
+    if ($this->accessScope() == 'private') {
       // First set $conn variable (used internally by collabtive methods)
       $conn = $this->connection;
       
       // Create user
-      $this->local_id = $this->_user->add("$this->name $this->surname", $this->email, '', '123456789');
+      $lid = $this->_user->add("$this->name $this->surname", $this->email, '', '123456789');
       
       // Create role for new user
-      // and set local uid
-      if ($this->local_id) {
-        $this->_roles->assign($this->getRoleIdToAssign(), $this->local_id);
-        $this->_setLocalUid();
+      if ($lid) {
+        $this->_roles->assign($this->getRoleIdToAssign(), $lid);
       }
     }
     
-    return $this->local_id;
+    return $lid;
   }
   
   /**

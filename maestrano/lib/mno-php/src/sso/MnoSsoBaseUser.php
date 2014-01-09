@@ -161,13 +161,34 @@ class MnoSsoBaseUser
   }
   
   /**
+   * Create a local user by invoking _createLocalUser
+   * and set uid on the newly created user
+   * If _createLocalUser returns null then access
+   * is refused to the user
+   */
+   public function createLocalUserOrDenyAccess()
+   {
+     if (is_null($this->local_id)) {
+       $this->local_id = $this->_createLocalUser();
+
+        // If a user has been created successfully
+        // then make sure UID is set on it
+        if ($this->local_id) {
+          $this->_setLocalUid();
+        }
+     }
+     
+     return $this->local_id;
+   }
+  
+  /**
    * Create a local user based on the sso user
    * This method must be re-implemented in MnoSsoUser
    * (raise an error otherwise)
    *
    * @return a user ID if found, null otherwise
    */
-  public function createLocalUser()
+  protected function _createLocalUser()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }
