@@ -13,6 +13,12 @@ class MnoSsoSession
   public $settings = null;
   
   /**
+   * Session object
+   * @var MnoSettings
+   */
+  public $session = null;
+  
+  /**
    * User UID
    * @var string
    */
@@ -43,6 +49,7 @@ class MnoSsoSession
   {
       // Populate attributes from params
       $this->settings = $mno_settings;
+      $this->session = $session;
       $this->uid = $session['mno_uid'];
       $this->token = $session['mno_session'];
       $this->recheck = $session['mno_session_recheck'];
@@ -76,4 +83,33 @@ class MnoSsoSession
       $url = $this->settings->sso_session_check_url . '/' . $this->uid . '?session=' . $this->token;
       return $url;
     }
+    
+    /**
+     * Fetch url and return content. Wrapper function.
+     *
+     * @param string full url to fetch
+     * @return string page content
+     */
+    public function fetchUrl($url) {
+      return file_get_contents($url);
+    }
+    
+    /**
+     * Perform remote session check on Maestrano
+     *
+     * @return boolean the validity of the session
+     */
+     public function performRemoteCheck() {
+       $json = $this->fetchUrl($this->sessionCheckUrl());
+       if ($json) {
+        $response = json_decode($json,true);
+        
+        if ($response['valid'] && $response['recheck']) {
+          $this->recheck = new DateTime($response['recheck']);
+          return true;
+        }
+       }
+       
+       return false;
+     }
 }
