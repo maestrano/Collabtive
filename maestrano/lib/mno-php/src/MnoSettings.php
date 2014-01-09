@@ -21,6 +21,12 @@ class MnoSettings
     public $sso_url = '';
     
     /**
+     * The URL where the SSO request should be initiated.
+     * @var string
+     */
+    public $sso_init_url = '';
+    
+    /**
      * The URL where the SSO response will be posted.
      * @var string
      */
@@ -45,6 +51,12 @@ class MnoSettings
      * @var string
      */
     public $sso_name_id_format = OneLogin_Saml_Settings::NAMEID_PERSISTENT;
+    
+    /**
+     * The Maestrano endpoint in charge of providing session information
+     * @var string
+     */
+    public $sso_session_check_url = '';
     
     /**
      * Return a settings object for php-saml
