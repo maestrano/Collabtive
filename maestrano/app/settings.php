@@ -5,6 +5,8 @@ $mno_settings = new MnoSettings();
 
 $mno_settings->app_name = 'bla.app.dev.maestrano.io';
 
+$mno_settings->sso_enabled = true;
+
 $mno_settings->sso_url = 'http://localhost:3000/api/v1/auth/saml';
 
 $mno_settings->sso_session_check_url = 'http://localhost:3000/api/v1/auth/saml';

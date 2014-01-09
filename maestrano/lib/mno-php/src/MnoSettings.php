@@ -15,6 +15,12 @@ class MnoSettings
     public $app_name = 'myapp';
     
     /**
+     * Is SSO enabled for this application
+     * @var boolean
+     */
+    public $sso_enabled = false;
+    
+    /**
      * Maestrano Single Sign On url
      * @var string
      */
