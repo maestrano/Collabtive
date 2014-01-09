@@ -7,6 +7,10 @@ $mno_settings->app_name = 'bla.app.dev.maestrano.io';
 
 $mno_settings->sso_url = 'http://localhost:3000/api/v1/auth/saml';
 
+$mno_settings->sso_session_check_url = 'http://localhost:3000/api/v1/auth/saml';
+
+$mno_settings->sso_init_url = 'http://localhost:8888/maestrano/auth/saml/index.php';
+
 $mno_settings->sso_return_url = 'http://localhost:8888/maestrano/auth/saml/consume.php';
 
 $mno_settings->sso_access_unauthorized_url = 'http://localhost:3000/app_access_unauthorized';
