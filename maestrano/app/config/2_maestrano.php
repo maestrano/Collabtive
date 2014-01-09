@@ -1,28 +1,17 @@
 <?php
-// Get full host (protocal + server host)
-$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
-$full_host = $protocol . $_SERVER['HTTP_HOST'];
-
 // Get Maestrano SSO Host
-$mno_sso_host = getenv('MNO_SSO_HOST') ? getenv('MNO_SSO_HOST') : 'http://localhost:3000'
+$mno_sso_host = 'http://localhost:3000';
 
-// Configure Maestrano API
-$mno_settings = new MnoSettings();
-
-$mno_settings->app_name = 'bla.app.dev.maestrano.io';
-
-$mno_settings->sso_enabled = true;
-
+// Endpoint to reach for SSO Identification
 $mno_settings->sso_url = $mno_sso_host . '/api/v1/auth/saml';
 
+// Endpoint to reach for session information (/api/v1/auth/saml/user-xyz?session=df4sd4g3fd345sfgd534)
 $mno_settings->sso_session_check_url = $mno_sso_host . '/api/v1/auth/saml';
 
-$mno_settings->sso_init_url = $full_host . '/maestrano/auth/saml/index.php';
-
-$mno_settings->sso_return_url = $full_host . '/maestrano/auth/saml/consume.php';
-
+// Access unauthorized page
 $mno_settings->sso_access_unauthorized_url = $mno_sso_host . '/app_access_unauthorized';
 
+// Maestrano X509 Certificate
 $mno_settings->sso_x509_certificate = <<<CERTIFICATE
 -----BEGIN CERTIFICATE-----
 MIIDezCCAuSgAwIBAgIJAOehBr+YIrhjMA0GCSqGSIb3DQEBBQUAMIGGMQswCQYD
