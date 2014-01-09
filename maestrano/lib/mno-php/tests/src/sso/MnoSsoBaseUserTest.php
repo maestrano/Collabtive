@@ -87,12 +87,14 @@ CERTIFICATE;
     
     public function testUserContruction()
     {
+        $session = array('some_session_var' => 12456);
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $response = new OneLogin_Saml_Response($this->_saml_settings, $assertion);
         $response_attr = $response->getAttributes();
-        $sso_user = new MnoSsoBaseUser($response);
+        $sso_user = new MnoSsoBaseUser($response,$session);
         
         // Test user attributes have the right value
+        $this->assertEquals($session, $sso_user->session);
         $this->assertEquals($response_attr['mno_uid'][0], $sso_user->uid);
         $this->assertEquals($response_attr['mno_session'][0], $sso_user->sso_session);
         $this->assertEquals(new DateTime($response_attr['mno_session_recheck'][0]), $sso_user->sso_session_recheck);
@@ -199,17 +201,17 @@ CERTIFICATE;
     public function testFunctionSignIn()
     {
       // Build Session
-      $_SESSION = array();
+      $session = array();
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
-      $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion),$session);
       
       // Test that session variables have been set correctly
       $sso_user->signIn();
-      $this->assertEquals($sso_user->uid, $_SESSION['mno_uid']);
-      $this->assertEquals($sso_user->sso_session, $_SESSION['mno_session']);
-      $this->assertEquals($sso_user->sso_session_recheck, $_SESSION['mno_session_recheck']);
+      $this->assertEquals($sso_user->uid, $session['mno_uid']);
+      $this->assertEquals($sso_user->sso_session, $session['mno_session']);
+      $this->assertEquals($sso_user->sso_session_recheck, $session['mno_session_recheck']);
     }
     
     /**

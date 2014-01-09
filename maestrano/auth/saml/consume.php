@@ -28,7 +28,7 @@ try {
     if ($samlResponse->isValid()) {
         
         // Get Maestrano User
-        $sso_user = new MnoSsoUser($samlResponse, $conn);
+        $sso_user = new MnoSsoUser($samlResponse, $_SESSION, $conn);
         
         // Try to match the user with a local one
         $sso_user->matchLocal();

@@ -32,10 +32,10 @@ class MnoSsoUser extends MnoSsoBaseUser
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public function __construct(OneLogin_Saml_Response $saml_response, $db_connection = null)
+  public function __construct(OneLogin_Saml_Response $saml_response, &$session = array(), $db_connection = null)
   {
     // Call Parent
-    parent::__construct($saml_response);
+    parent::__construct($saml_response,$session);
     
     // Assign new attributes
     $this->connection = $db_connection;
@@ -62,12 +62,12 @@ class MnoSsoUser extends MnoSsoBaseUser
         $now = time();
         
         // Set session
-        $_SESSION['userid'] = $chk['ID'];
-        $_SESSION['username'] = stripslashes($chk['name']);
-        $_SESSION['lastlogin'] = $now;
-        $_SESSION['userlocale'] = $chk['locale'];
-        $_SESSION['usergender'] = $chk['gender'];
-        $_SESSION["userpermissions"] = $this->_roles->getUserRole($chk["ID"]);
+        $this->session['userid'] = $chk['ID'];
+        $this->session['username'] = stripslashes($chk['name']);
+        $this->session['lastlogin'] = $now;
+        $this->session['userlocale'] = $chk['locale'];
+        $this->session['usergender'] = $chk['gender'];
+        $this->session["userpermissions"] = $this->_roles->getUserRole($chk["ID"]);
         
         // Update last login timestamp
         $upd1 = $conn->query("UPDATE user SET lastlogin = '$now' WHERE ID = $this->local_id");

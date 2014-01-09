@@ -278,8 +278,9 @@ CERTIFICATE;
     public function testFunctionSignIn()
     {
       // Build User
+      $session = array();
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
-      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion),$session);
       $sso_user->local_id = 1234;
       
       // Create a roles stub
@@ -319,11 +320,11 @@ CERTIFICATE;
       $sso_user->connection = $pdo_stub;
       $sso_user->signIn();
       
-      $this->assertEquals($sso_user->local_id, $_SESSION['userid']);
-      $this->assertEquals("$sso_user->name $sso_user->surname", $_SESSION['username']);
-      $this->assertGreaterThan($last_login, $_SESSION['lastlogin']);
-      $this->assertEquals('', $_SESSION['userlocale']);
-      $this->assertEquals('', $_SESSION['usergender']);
-      $this->assertEquals(1, $_SESSION["userpermissions"]);
+      $this->assertEquals($sso_user->local_id, $session['userid']);
+      $this->assertEquals("$sso_user->name $sso_user->surname", $session['username']);
+      $this->assertGreaterThan($last_login, $session['lastlogin']);
+      $this->assertEquals('', $session['userlocale']);
+      $this->assertEquals('', $session['usergender']);
+      $this->assertEquals(1, $session["userpermissions"]);
     }
 }

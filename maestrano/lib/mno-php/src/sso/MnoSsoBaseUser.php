@@ -7,6 +7,12 @@
 class MnoSsoBaseUser
 {
   /**
+   * Session Object
+   * @var array
+   */
+  public $session = null;
+  
+  /**
    * User UID
    * @var string
    */
@@ -87,13 +93,14 @@ class MnoSsoBaseUser
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public function __construct(OneLogin_Saml_Response $saml_response)
+  public function __construct(OneLogin_Saml_Response $saml_response, &$session = array())
   {
       // First get the assertion attributes from the SAML
       // response
       $assert_attrs = $saml_response->getAttributes();
       
       // Populate user attributes from assertions
+      $this->session = &$session;
       $this->uid = $assert_attrs['mno_uid'][0];
       $this->sso_session = $assert_attrs['mno_session'][0];
       $this->sso_session_recheck = new DateTime($assert_attrs['mno_session_recheck'][0]);
@@ -212,8 +219,8 @@ class MnoSsoBaseUser
    */
   public function signIn()
   {
-    $_SESSION['mno_uid'] = $this->uid;
-    $_SESSION['mno_session'] = $this->sso_session;
-    $_SESSION['mno_session_recheck'] = $this->sso_session_recheck;
+    $this->session['mno_uid'] = $this->uid;
+    $this->session['mno_session'] = $this->sso_session;
+    $this->session['mno_session_recheck'] = $this->sso_session_recheck;
   }
 }
