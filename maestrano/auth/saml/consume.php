@@ -16,6 +16,11 @@ require '../../app/init/auth.php';
 
 session_start();
 
+// Database Connection variable
+if (!isset($conn)) {
+  $conn = null;
+}
+
 // Check where we should redirect the user
 // after successful login
 if (isset($_SESSION['mno_previous_url'])) {
