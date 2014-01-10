@@ -156,6 +156,29 @@ CERTIFICATE;
       $this->assertEquals(true,$protected_method->invokeArgs($sso_user,array()));
     }
     
+    public function testFunctionSyncLocalDetails()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('syncLocalDetails');
+      
+      // Build User
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      $sso_user->local_id = 1234;
+      
+      // Create a connection stub
+      $pdo_stub = $this->getMock('PDOMock');
+      $pdo_stub->expects($this->once())
+               ->method('query')
+               ->with($this->equalTo("UPDATE user SET name = '$sso_user->name $sso_user->surname', email = '$sso_user->email' WHERE ID = $sso_user->local_id"))
+               ->will($this->returnValue(true));
+               
+      
+      // Test method returns true
+      $sso_user->connection = $pdo_stub;
+      $this->assertEquals(true,$protected_method->invokeArgs($sso_user,array()));
+    }
+    
     public function testFunctionCreateLocalUserWhenAppOwner()
     {
       // Specify which protected method get tested

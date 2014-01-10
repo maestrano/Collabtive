@@ -165,6 +165,22 @@ class MnoSsoUser extends MnoSsoBaseUser
   }
   
   /**
+   * Set all 'soft' details on the user (like name, surname, email)
+   * Implementing this method is optional.
+   *
+   * @return boolean whether the user was synced or not
+   */
+   protected function syncLocalDetails()
+   {
+     if($this->local_id) {
+       $upd = $this->connection->query("UPDATE user SET name = {$this->connection->quote($this->name . ' ' . $this->surname)}, email = {$this->connection->quote($this->email)} WHERE ID = $this->local_id");
+       return $upd;
+     }
+     
+     return false;
+   }
+  
+  /**
    * Set the Maestrano UID on a local user via id lookup
    *
    * @return a user ID if found, null otherwise
