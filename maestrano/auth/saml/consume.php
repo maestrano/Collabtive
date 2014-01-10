@@ -23,7 +23,6 @@ if (isset($_SESSION['mno_previous_url'])) {
 } else {
   $after_signin_url = "/";
 }
-error_log($_POST['SAMLResponse']);
 $samlResponse = new OneLogin_Saml_Response($mno_settings->getSamlSettings(), $_POST['SAMLResponse']);
 
 try {
@@ -39,43 +38,23 @@ try {
         // to create a new local user
         if (is_null($sso_user->local_id)) {
           $sso_user->createLocalUserOrDenyAccess();
-          //echo 'Attempting to create new user <br/>';
         }
         
         // If user is matched then sign it in
         // Refuse access otherwise
         if ($sso_user->local_id) {
-          //echo 'Access Granted <br/>';
           $sso_user->signIn();
-          //echo 'Signed In <br/>';
-          header("Location: $after_signin_url");
+          header("Location: " . $after_signin_url);
         } else {
-          //echo 'Access Refused <br/>';
-          header("Location: $mno_settings->sso_access_unauthorized_url");
+          header("Location: " . $mno_settings->sso_access_unauthorized_url);
         }
-        echo '<br/><br/>';
-        
-        echo 'You are: ' . $samlResponse->getNameId() . '<br>';
-        echo 'After Signin Url: ' . $after_signin_url . '<br>';
-        $attributes = $samlResponse->getAttributes();
-        if (!empty($attributes)) {
-            echo 'You have the following attributes:<br>';
-            echo '<table><thead><th>Name</th><th>Values</th></thead><tbody>';
-            foreach ($attributes as $attributeName => $attributeValues) {
-                echo '<tr><td>' . htmlentities($attributeName) . '</td><td><ul>';
-                    foreach ($attributeValues as $attributeValue) {
-                        echo '<li>' . htmlentities($attributeValue) . '</li>';
-                    }
-                echo '</ul></td></tr>';
-            }
-            echo '</tbody></table>';
-        }
-        echo var_dump($_SESSION);
     }
     else {
-        echo 'Invalid SAML response.';
+        echo 'There was an error during the authentication process.<br/>';
+        echo 'Please try again. If issue persists please contact support@maestrano.com';
     }
 }
 catch (Exception $e) {
-    echo 'Invalid SAML response: ' . $e->getMessage();
+    echo 'There was an error during the authentication process.<br/>';
+    echo 'Please try again. If issue persists please contact support@maestrano.com';
 }
