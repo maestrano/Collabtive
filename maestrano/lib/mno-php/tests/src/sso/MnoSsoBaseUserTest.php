@@ -8,12 +8,14 @@ class MnoSsoUserStub extends MnoSsoBaseUser {
   public $_stub_setLocalUid = true;
   public $_stub_setInSession = true;
   public $_stub_createLocalUser = 1234;
+  public $_stub_syncLocalDetails = true;
   
   public $_called_getLocalIdByUid = 0;
   public $_called_getLocalIdByEmail = 0;
   public $_called_setLocalUid = 0;
   public $_called_setInSession = 0;
   public $_called_createLocalUser = 0;
+  public $_called_syncLocalDetails = 0;
   
   protected function getLocalIdByUid() 
   { 
@@ -43,6 +45,12 @@ class MnoSsoUserStub extends MnoSsoBaseUser {
   {
     $this->_called_createLocalUser++;
     return $this->_stub_createLocalUser;
+  }
+  
+  protected function syncLocalDetails()
+  {
+    $this->_called_syncLocalDetails++;
+    return $this->_stub_syncLocalDetails;
   }
 }
 
@@ -133,6 +141,7 @@ CERTIFICATE;
       $this->assertEquals($sso_user->_stub_getLocalIdByUid, $sso_user->local_id);
       $this->assertEquals(0, $sso_user->_called_getLocalIdByEmail);
       $this->assertEquals(0, $sso_user->_called_setLocalUid);
+      $this->assertEquals(1, $sso_user->_called_syncLocalDetails);
     }
     
     
@@ -148,6 +157,7 @@ CERTIFICATE;
       $this->assertEquals($sso_user->_stub_getLocalIdByEmail, $sso_user->matchLocal());
       $this->assertEquals($sso_user->_stub_getLocalIdByEmail, $sso_user->local_id);
       $this->assertEquals(1, $sso_user->_called_setLocalUid);
+      $this->assertEquals(1, $sso_user->_called_syncLocalDetails);
     }
     
     public function testFunctionMatchLocalWhenNotFound()
@@ -164,6 +174,7 @@ CERTIFICATE;
       $this->assertEquals(1, $sso_user->_called_getLocalIdByUid);
       $this->assertEquals(1, $sso_user->_called_getLocalIdByEmail);
       $this->assertEquals(0, $sso_user->_called_setLocalUid);
+      $this->assertEquals(0, $sso_user->_called_syncLocalDetails);
     }
     
     public function testFunctionAccessScopeWhenUserFound()

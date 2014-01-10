@@ -140,6 +140,11 @@ class MnoSsoBaseUser
       }
     }
     
+    // Sync local details if we have a match
+    if ($this->local_id) {
+      $this->syncLocalDetails();
+    }
+    
     return $this->local_id;
   }
   
