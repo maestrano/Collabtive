@@ -52,9 +52,13 @@ if ($action == "addrole")
 // delete a role
 elseif ($action == "delrole")
 {
-    if ($roleobj->del($id))
-    {
-        echo "ok";
+    if($id > 2) {
+      if ($roleobj->del($id))
+      {
+          echo "ok";
+      }
+    } else {
+      echo 'nok';
     }
 }
 // edit a role

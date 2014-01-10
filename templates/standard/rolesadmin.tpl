@@ -56,8 +56,10 @@
 							</td>
 							<td></td>
 							<td class="tools">
+							  {if $roles[role].ID > 2}
 							<!--	<a class="tool_edit" href="manageproject.php?action=editform&amp;id={$roles[role].ID}" title="{#edit#}" ></a>-->
 								<a class="tool_del" href="javascript:confirmfunction('{#confirmdel#}','deleteElement(\'role_{$roles[role].ID}\',\'manageroles.php?action=delrole&amp;id={$roles[role].ID}\')');"  title="{#delete#}"></a>
+								{/if}
 							</td>
 						</tr>
 
