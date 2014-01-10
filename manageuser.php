@@ -88,7 +88,12 @@ if ($action == "loginerror") {
     }
 } elseif ($action == "logout") {
     if ($user->logout()) {
-        header("Location: index.php?mode=logout");
+        // Hook:Maestrano
+        if ($mno_settings && $mno_settings->sso_enabled) {
+          header("Location: " . $mno_settings->sso_access_logout_url);
+        } else {
+          header("Location: index.php?mode=logout");
+        }
     }
 } elseif ($action == "addform") {
     $title = $langfile['adduser'];

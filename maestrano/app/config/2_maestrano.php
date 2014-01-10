@@ -11,6 +11,9 @@ $mno_settings->sso_session_check_url = $mno_sso_host . '/api/v1/auth/saml';
 // Access unauthorized page
 $mno_settings->sso_access_unauthorized_url = $mno_sso_host . '/app_access_unauthorized';
 
+// Access Logout page
+$mno_settings->sso_access_logout_url = $mno_sso_host . '/app_logout';
+
 // Maestrano X509 Certificate
 $mno_settings->sso_x509_certificate = <<<CERTIFICATE
 -----BEGIN CERTIFICATE-----

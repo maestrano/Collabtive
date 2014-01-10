@@ -24,6 +24,7 @@ if (!empty($db_name) and !empty($db_user)) {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 }
 
+// Hook:Maestrano
 // Load Maestrano session
 if ($maestrano_enabled) {
   require CL_ROOT . '/maestrano/app/init/session.php';
@@ -66,6 +67,7 @@ if (isset($_SESSION["userid"])) {
     $template->assign("userpermissions", $userpermissions);
     $template->assign("loggedin", 1);
     
+    // Hook:Maestrano
     // Check Maestrano session is still valid
     if ($mno_settings && $mno_settings->sso_enabled && $mno_session) {
       if (!$mno_session->isValid()) {
@@ -73,6 +75,7 @@ if (isset($_SESSION["userid"])) {
       }
     }
 } else {
+    // Hook:Maestrano
     if ($mno_settings && $mno_settings->sso_enabled) {
       header("Location: " . $mno_settings->sso_init_url);
     }
