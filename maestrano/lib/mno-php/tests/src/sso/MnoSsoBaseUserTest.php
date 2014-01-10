@@ -266,6 +266,19 @@ CERTIFICATE;
       $this->assertEquals($sso_user->sso_session_recheck, $session['mno_session_recheck']);
     }
     
+    public function testDummyImplementationForSyncLocalUser()
+    {
+      // Specify which protected method get tested
+      $protected_method = self::getMethod('syncLocalUser');
+      
+      // Build user
+      $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
+      $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
+      
+      // Test it returns true
+      $this->assertEquals(true, $protected_method->invokeArgs($sso_user,array()));
+    }
+    
     /**
      * @expectedException Exception
      * @expectedExceptionMessage Function createLocalUser must be overriden in MnoSsoUser class!

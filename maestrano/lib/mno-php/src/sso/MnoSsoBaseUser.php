@@ -230,6 +230,18 @@ class MnoSsoBaseUser
   }
   
   /**
+   * Set all 'soft' details on the user (like name, surname, email)
+   * This is a convenience method that must be implemented in
+   * MnoSsoUser but is not mandatory.
+   *
+   * @return boolean whether the user was synced or not
+   */
+   protected function syncLocalUser()
+   {
+     return true;
+   }
+  
+  /**
    * Sign the user in the application. By default,
    * set the mno_uid, mno_session and mno_session_recheck
    * in session.
