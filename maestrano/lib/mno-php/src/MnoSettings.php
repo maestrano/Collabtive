@@ -21,6 +21,13 @@ class MnoSettings
     public $sso_enabled = false;
     
     /**
+     * If enabled then public access will be completely
+     * denied (ALL pages will require authentication)
+     * @var boolean
+     */
+    public $sso_intranet_mode = false;
+    
+    /**
      * Maestrano Single Sign On url
      * @var string
      */

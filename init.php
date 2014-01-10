@@ -28,6 +28,14 @@ if (!empty($db_name) and !empty($db_user)) {
 // Load Maestrano session
 if ($maestrano_enabled) {
   require CL_ROOT . '/maestrano/app/init/session.php';
+  
+  // Require authentication straight away if intranet
+  // mode enabled
+  if ($mno_settings && $mno_settings->sso_enabled && $mno_settings->sso_intranet_mode && $mno_session) {
+    if (!$mno_session->isValid()) {
+      header("Location: " . $mno_settings->sso_init_url);
+    }
+  }
 }
 
 // Start template engine

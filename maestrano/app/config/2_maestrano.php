@@ -14,6 +14,9 @@ $mno_settings->sso_access_unauthorized_url = $mno_sso_host . '/app_access_unauth
 // Access Logout page
 $mno_settings->sso_access_logout_url = $mno_sso_host . '/app_logout';
 
+// Intranet Mode - If enabled then ALL pages require authentication
+$mno_settings->sso_intranet_mode = false;
+
 // Maestrano X509 Certificate
 $mno_settings->sso_x509_certificate = <<<CERTIFICATE
 -----BEGIN CERTIFICATE-----
