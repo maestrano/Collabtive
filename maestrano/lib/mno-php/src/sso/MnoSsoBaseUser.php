@@ -236,7 +236,7 @@ class MnoSsoBaseUser
    *
    * @return boolean whether the user was synced or not
    */
-   protected function syncLocalUser()
+   protected function syncLocalDetails()
    {
      return true;
    }

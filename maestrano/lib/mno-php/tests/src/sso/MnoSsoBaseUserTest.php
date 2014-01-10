@@ -266,10 +266,10 @@ CERTIFICATE;
       $this->assertEquals($sso_user->sso_session_recheck, $session['mno_session_recheck']);
     }
     
-    public function testDummyImplementationForSyncLocalUser()
+    public function testDummyImplementationForSyncLocalDetails()
     {
       // Specify which protected method get tested
-      $protected_method = self::getMethod('syncLocalUser');
+      $protected_method = self::getMethod('syncLocalDetails');
       
       // Build user
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
