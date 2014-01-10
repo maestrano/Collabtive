@@ -86,7 +86,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return the ID of the user created, null otherwise
    */
-  public function _createLocalUser()
+  protected function _createLocalUser()
   {
     $lid = null;
     
