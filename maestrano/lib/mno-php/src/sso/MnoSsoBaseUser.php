@@ -118,25 +118,25 @@ class MnoSsoBaseUser
    * is called to update the local user Maestrano UID
    * ---
    * Internally use the following interface methods:
-   *  - _getLocalIdByUid
-   *  - _getLocalIdByEmail
-   *  - _setLocalUid
+   *  - getLocalIdByUid
+   *  - getLocalIdByEmail
+   *  - setLocalUid
    * 
    * @return local_id if a local user matched, null otherwise
    */
   public function matchLocal()
   {
     // Try to get the local id from uid
-    $this->local_id = $this->_getLocalIdByUid();
+    $this->local_id = $this->getLocalIdByUid();
     
     // Get local id via email if previous search
     // was unsuccessful
     if (is_null($this->local_id)) {
-      $this->local_id = $this->_getLocalIdByEmail();
+      $this->local_id = $this->getLocalIdByEmail();
       
       // Set Maestrano UID on user
       if ($this->local_id) {
-        $this->_setLocalUid();
+        $this->setLocalUid();
       }
     }
     
@@ -161,20 +161,20 @@ class MnoSsoBaseUser
   }
   
   /**
-   * Create a local user by invoking _createLocalUser
+   * Create a local user by invoking createLocalUser
    * and set uid on the newly created user
-   * If _createLocalUser returns null then access
+   * If createLocalUser returns null then access
    * is refused to the user
    */
    public function createLocalUserOrDenyAccess()
    {
      if (is_null($this->local_id)) {
-       $this->local_id = $this->_createLocalUser();
+       $this->local_id = $this->createLocalUser();
 
         // If a user has been created successfully
         // then make sure UID is set on it
         if ($this->local_id) {
-          $this->_setLocalUid();
+          $this->setLocalUid();
         }
      }
      
@@ -188,7 +188,7 @@ class MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _createLocalUser()
+  protected function createLocalUser()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }
@@ -200,7 +200,7 @@ class MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _getLocalIdByUid()
+  protected function getLocalIdByUid()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }
@@ -212,7 +212,7 @@ class MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _getLocalIdByEmail()
+  protected function getLocalIdByEmail()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }
@@ -224,7 +224,7 @@ class MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _setLocalUid()
+  protected function setLocalUid()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
   }
@@ -240,7 +240,7 @@ class MnoSsoBaseUser
    */
   public function signIn()
   {
-    if ($this->_setInSession()) {
+    if ($this->setInSession()) {
       $this->session['mno_uid'] = $this->uid;
       $this->session['mno_session'] = $this->sso_session;
       $this->session['mno_session_recheck'] = $this->sso_session_recheck;
@@ -255,7 +255,7 @@ class MnoSsoBaseUser
    *
    * @return boolean whether the user was successfully set in session or not
    */
-   protected function _setInSession()
+   protected function setInSession()
    {
      throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
    }

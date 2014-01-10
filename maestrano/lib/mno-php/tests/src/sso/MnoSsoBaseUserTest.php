@@ -15,31 +15,31 @@ class MnoSsoUserStub extends MnoSsoBaseUser {
   public $_called_setInSession = 0;
   public $_called_createLocalUser = 0;
   
-  protected function _getLocalIdByUid() 
+  protected function getLocalIdByUid() 
   { 
     $this->_called_getLocalIdByUid++;
     return $this->_stub_getLocalIdByUid;
   }
   
-  protected function _getLocalIdByEmail() 
+  protected function getLocalIdByEmail() 
   { 
     $this->_called_getLocalIdByEmail++;
     return $this->_stub_getLocalIdByEmail;
   }
   
-  protected function _setLocalUid()
+  protected function setLocalUid()
   {
     $this->_called_setLocalUid++;
     return $this->_stub_setLocalUid;
   }
   
-  protected function _setInSession()
+  protected function setInSession()
   {
     $this->_called_setInSession++;
     return $this->_stub_setInSession;
   }
   
-  protected function _createLocalUser()
+  protected function createLocalUser()
   {
     $this->_called_createLocalUser++;
     return $this->_stub_createLocalUser;
@@ -220,10 +220,10 @@ CERTIFICATE;
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
       $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion),$session);
       
-      // Stub _createLocalUser
+      // Stub createLocalUser
       $sso_user->_stub_createLocalUser = 123456;
       
-      // Test that _createLocalUser has been called as well as return value
+      // Test that createLocalUser has been called as well as return value
       $this->assertEquals(123456, $sso_user->createLocalUserOrDenyAccess());
       $this->assertEquals(123456, $sso_user->local_id);
       $this->assertEquals(1, $sso_user->_called_createLocalUser);
@@ -236,10 +236,10 @@ CERTIFICATE;
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
       $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion),$session);
       
-      // Stub _createLocalUser
+      // Stub createLocalUser
       $sso_user->_stub_createLocalUser = null;
       
-      // Test that _createLocalUser has been called as well as return value
+      // Test that createLocalUser has been called as well as return value
       $this->assertEquals(null, $sso_user->createLocalUserOrDenyAccess());
       $this->assertEquals(null, $sso_user->local_id);
       $this->assertEquals(1, $sso_user->_called_createLocalUser);
@@ -255,7 +255,7 @@ CERTIFICATE;
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
       $sso_user = new MnoSsoUserStub(new OneLogin_Saml_Response($this->_saml_settings, $assertion),$session);
       
-      // Stub _setInSession
+      // Stub setInSession
       $sso_user->_stub_setInSession = true;
       
       // Test that session variables have been set correctly
@@ -268,12 +268,12 @@ CERTIFICATE;
     
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage Function _createLocalUser must be overriden in MnoSsoUser class!
+     * @expectedExceptionMessage Function createLocalUser must be overriden in MnoSsoUser class!
      */
     public function testImplementationErrorForCreateLocalUser()
     {
         // Specify which protected method get tested
-        $protected_method = self::getMethod('_createLocalUser');
+        $protected_method = self::getMethod('createLocalUser');
         
         // Build user
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -285,12 +285,12 @@ CERTIFICATE;
     
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage Function _getLocalIdByUid must be overriden in MnoSsoUser class!
+     * @expectedExceptionMessage Function getLocalIdByUid must be overriden in MnoSsoUser class!
      */
     public function testImplementationErrorForGetLocalIdByUid()
     {
         // Specify which protected method get tested
-        $protected_method = self::getMethod('_getLocalIdByUid');
+        $protected_method = self::getMethod('getLocalIdByUid');
       
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
@@ -300,12 +300,12 @@ CERTIFICATE;
     
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage Function _getLocalIdByEmail must be overriden in MnoSsoUser class!
+     * @expectedExceptionMessage Function getLocalIdByEmail must be overriden in MnoSsoUser class!
      */
     public function testImplementationErrorForGetLocalIdByEmail()
     {
         // Specify which protected method get tested
-        $protected_method = self::getMethod('_getLocalIdByEmail');
+        $protected_method = self::getMethod('getLocalIdByEmail');
       
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
@@ -315,12 +315,12 @@ CERTIFICATE;
     
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage Function _setLocalUid must be overriden in MnoSsoUser class!
+     * @expectedExceptionMessage Function setLocalUid must be overriden in MnoSsoUser class!
      */
     public function testImplementationErrorForSetLocalUid()
     {
         // Specify which protected method get tested
-        $protected_method = self::getMethod('_setLocalUid');
+        $protected_method = self::getMethod('setLocalUid');
       
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));
@@ -330,12 +330,12 @@ CERTIFICATE;
     
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage Function _setInSession must be overriden in MnoSsoUser class!
+     * @expectedExceptionMessage Function setInSession must be overriden in MnoSsoUser class!
      */
     public function testImplementationErrorForSetInSession()
     {
         // Specify which protected method get tested
-        $protected_method = self::getMethod('_setInSession');
+        $protected_method = self::getMethod('setInSession');
       
         $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
         $sso_user = new MnoSsoBaseUser(new OneLogin_Saml_Response($this->_saml_settings, $assertion));

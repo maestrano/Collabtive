@@ -74,7 +74,7 @@ CERTIFICATE;
     public function testFunctionGetLocalIdByUid()
     {
       // Specify which protected method get tested
-      $protected_method = self::getMethod('_getLocalIdByUid');
+      $protected_method = self::getMethod('getLocalIdByUid');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -105,7 +105,7 @@ CERTIFICATE;
     public function testFunctionGetLocalIdByEmail()
     {
       // Specify which protected method get tested
-      $protected_method = self::getMethod('_getLocalIdByEmail');
+      $protected_method = self::getMethod('getLocalIdByEmail');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -136,7 +136,7 @@ CERTIFICATE;
     public function testFunctionSetLocalUid()
     {
       // Specify which protected method get tested
-      $protected_method = self::getMethod('_setLocalUid');
+      $protected_method = self::getMethod('setLocalUid');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -159,7 +159,7 @@ CERTIFICATE;
     public function testFunctionCreateLocalUserWhenAppOwner()
     {
       // Specify which protected method get tested
-      $protected_method = self::getMethod('_createLocalUser');
+      $protected_method = self::getMethod('createLocalUser');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -194,7 +194,7 @@ CERTIFICATE;
     {
       
       // Specify which protected method get tested
-      $protected_method = self::getMethod('_createLocalUser');
+      $protected_method = self::getMethod('createLocalUser');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');
@@ -229,7 +229,7 @@ CERTIFICATE;
     public function testFunctionCreateLocalUserWhenNormal()
     {
       // Specify which protected method get tested
-      $protected_method = self::getMethod('_createLocalUser');
+      $protected_method = self::getMethod('createLocalUser');
       
       // Build User
       $assertion = file_get_contents(TEST_ROOT . '/support/sso-responses/response_ext_user.xml.base64');

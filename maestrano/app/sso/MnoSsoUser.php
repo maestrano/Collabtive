@@ -51,7 +51,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return boolean whether the user was successfully set in session or not
    */
-  protected function _setInSession()
+  protected function setInSession()
   {
     // First set $conn variable (used internally by collabtive methods)
     $conn = $this->connection;
@@ -86,7 +86,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return the ID of the user created, null otherwise
    */
-  protected function _createLocalUser()
+  protected function createLocalUser()
   {
     $lid = null;
     
@@ -137,7 +137,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _getLocalIdByUid()
+  protected function getLocalIdByUid()
   {
     $result = $this->connection->query("SELECT ID FROM user WHERE mno_uid = {$this->connection->quote($this->uid)} LIMIT 1")->fetch();
     
@@ -153,7 +153,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _getLocalIdByEmail()
+  protected function getLocalIdByEmail()
   {
     $result = $this->connection->query("SELECT ID FROM user WHERE email = {$this->connection->quote($this->email)} LIMIT 1")->fetch();
     
@@ -169,7 +169,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    *
    * @return a user ID if found, null otherwise
    */
-  protected function _setLocalUid()
+  protected function setLocalUid()
   {
     if($this->local_id) {
       $upd = $this->connection->query("UPDATE user SET mno_uid = {$this->connection->quote($this->uid)} WHERE ID = $this->local_id");
