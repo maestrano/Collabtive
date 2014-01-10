@@ -1,20 +1,17 @@
 <?php
 /**
- * SAMPLE Code to demonstrate how to initiate a SAML Authorization request
+ * This controller creates a SAML request and redirects to
+ * Maestrano SAML Identity Provider
  *
- * When the user visits this URL, the browser will be redirected to the SSO
- * IdP with an authorization request. If successful, it will then be
- * redirected to the consume URL (specified in settings) with the auth
- * details.
  */
 
 error_reporting(E_ALL);
 
-$settings = NULL;
-require 'settings.php';
+$mno_settings = NULL;
+require '../../app/init/auth.php';
 
 // Build SAML request and Redirect to IDP
-$authRequest = new OneLogin_Saml_AuthRequest($settings);
+$authRequest = new OneLogin_Saml_AuthRequest($mno_settings->getSamlSettings());
 $url = $authRequest->getRedirectUrl();
 
 header("Location: $url");

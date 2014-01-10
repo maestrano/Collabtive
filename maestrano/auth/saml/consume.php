@@ -1,10 +1,12 @@
 <?php
 /**
- * SAMPLE Code to demonstrate how to handle a SAML assertion response.
+ * This controller processes a SAML response and deals with
+ * user matching, creation and authentication
+ * Upon successful authentication it redirects to the URL 
+ * the user was trying to access.
+ * Upon failure it redirects to the Maestrano access
+ * unauthorized page
  *
- * The URL of this file will have been given during the SAML authorization.
- * After a successful authorization, the browser will be directed to this
- * link where it will send a certified response via $_POST.
  */
 
 error_reporting(E_ALL);
