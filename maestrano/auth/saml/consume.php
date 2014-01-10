@@ -9,7 +9,7 @@
  *
  */
 
-error_reporting(E_ALL);
+error_reporting(0);
 
 $mno_settings = NULL;
 require '../../app/init/auth.php';
