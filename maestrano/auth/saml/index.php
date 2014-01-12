@@ -8,7 +8,7 @@
 error_reporting(0);
 
 $mno_settings = NULL;
-require '../../app/init/auth.php';
+require MAESTRANO_ROOT . '/app/init/auth.php';
 
 // Build SAML request and Redirect to IDP
 $authRequest = new OneLogin_Saml_AuthRequest($mno_settings->getSamlSettings());
