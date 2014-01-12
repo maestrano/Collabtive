@@ -23,11 +23,14 @@ require COLLAB_DIR . '/config/standard/config.php';
 //-----------------------------------------------
 // Perform your custom preparation code
 //-----------------------------------------------
-// Start database connection
+// Set options to pass to the MnoSsoUser
+$opts = array();
 if (!empty($db_name) and !empty($db_user)) {
     // $tdb = new datenbank();
     $conn = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+    
+    $opts['db_connection'] = $conn;
 }
 
 
