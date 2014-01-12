@@ -4,6 +4,10 @@
  * Maestrano SAML Identity Provider
  *
  */
+//-----------------------------------------------
+// Define root folder
+//-----------------------------------------------
+define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
 
 error_reporting(0);
 

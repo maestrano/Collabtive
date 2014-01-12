@@ -2,7 +2,9 @@
 //-----------------------------------------------
 // Define root folder
 //-----------------------------------------------
-define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
+if (!isset(MAESTRANO_ROOT)){
+  define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
+}
 
 //-----------------------------------------------
 // Load Libraries & Settings
