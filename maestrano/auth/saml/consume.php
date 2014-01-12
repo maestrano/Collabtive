@@ -18,7 +18,7 @@ session_start();
 
 // Database Connection variable
 if (!isset($opts)) {
-  $opts = null;
+  $opts = array();
 }
 
 // Check where we should redirect the user
