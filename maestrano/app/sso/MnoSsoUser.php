@@ -95,7 +95,7 @@ class MnoSsoUser extends MnoSsoBaseUser
       $conn = $this->connection;
       
       // Create user
-      $lid = $this->_user->add("$this->name $this->surname", $this->email, '', '123456789');
+      $lid = $this->_user->add("$this->name $this->surname", $this->email, '', $this->generatePassword());
       
       // Create role for new user
       if ($lid) {

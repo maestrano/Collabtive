@@ -197,7 +197,7 @@ CERTIFICATE;
       $sso_user->_user = $this->getMock('user');
       $sso_user->_user->expects($this->once())
                ->method('add')
-               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->equalTo('123456789'))
+               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->isType('string'))
                ->will($this->returnValue($expected_id));
                
      // Create a roles stub
@@ -233,7 +233,7 @@ CERTIFICATE;
       $sso_user->_user = $this->getMock('user');
       $sso_user->_user->expects($this->once())
                ->method('add')
-               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->equalTo('123456789'))
+               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->isType('string'))
                ->will($this->returnValue($expected_id));
                
       // Create a roles stub
@@ -268,7 +268,7 @@ CERTIFICATE;
       $sso_user->_user = $this->getMock('user');
       $sso_user->_user->expects($this->once())
                ->method('add')
-               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->equalTo('123456789'))
+               ->with($this->equalTo("$sso_user->name $sso_user->surname"), $this->equalTo($sso_user->email), $this->equalTo(''), $this->isType('string'))
                ->will($this->returnValue($expected_id));
                
       // Create a roles stub
