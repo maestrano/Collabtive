@@ -2,7 +2,7 @@
 //-----------------------------------------------
 // Define root folder
 //-----------------------------------------------
-if (!isset(MAESTRANO_ROOT)){
+if (!defined('MAESTRANO_ROOT')) {
   define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
 }
 
