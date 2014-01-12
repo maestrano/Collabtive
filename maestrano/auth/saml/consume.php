@@ -16,7 +16,7 @@ require MAESTRANO_ROOT . '/app/init/auth.php';
 
 session_start();
 
-// Database Connection variable
+// Options variable
 if (!isset($opts)) {
   $opts = array();
 }
