@@ -25,16 +25,14 @@ if (!empty($db_name) and !empty($db_user)) {
 }
 
 // Hook:Maestrano
-// Load Maestrano session
-if ($maestrano_enabled) {
-  require CL_ROOT . '/maestrano/app/init/session.php';
-  
-  // Require authentication straight away if intranet
-  // mode enabled
-  if ($mno_settings && $mno_settings->sso_enabled && $mno_settings->sso_intranet_mode && $mno_session) {
-    if (!$mno_session->isValid()) {
-      header("Location: " . $mno_settings->sso_init_url);
-    }
+// Load Maestrano
+require CL_ROOT . '/maestrano/app/init/base.php';
+$maestrano = MaestranoService::getInstance();
+// Require authentication straight away if intranet
+// mode enabled
+if ($maestrano->isSsoIntranetEnabled()) {
+  if (!$maestrano->getSsoSession()->isValid()) {
+    header("Location: " . $maestrano->getSsoInitUrl());
   }
 }
 
@@ -77,15 +75,16 @@ if (isset($_SESSION["userid"])) {
     
     // Hook:Maestrano
     // Check Maestrano session is still valid
-    if ($mno_settings && $mno_settings->sso_enabled && $mno_session) {
-      if (!$mno_session->isValid()) {
-        header("Location: " . $mno_settings->sso_init_url);
+    if ($maestrano->isSsoEnabled()) {
+      if (!$maestrano->getSsoSession()->isValid()) {
+        header("Location: " . $maestrano->getSsoInitUrl());
       }
     }
 } else {
     // Hook:Maestrano
-    if ($mno_settings && $mno_settings->sso_enabled) {
-      header("Location: " . $mno_settings->sso_init_url);
+    // Redirect to SSO login
+    if ($maestrano->isSsoEnabled()) {
+      header("Location: " . $maestrano->getSsoInitUrl());
     }
     
     // Flag user as not logged in

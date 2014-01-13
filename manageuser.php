@@ -88,9 +88,11 @@ if ($action == "loginerror") {
     }
 } elseif ($action == "logout") {
     if ($user->logout()) {
+        
         // Hook:Maestrano
-        if ($mno_settings && $mno_settings->sso_enabled) {
-          header("Location: " . $mno_settings->sso_access_logout_url);
+        $maestrano = MaestranoService::getInstance();
+        if ($maestrano->isSsoEnabled()) {
+          header("Location: " . $maestrano->getSsoLogoutUrl());
         } else {
           header("Location: index.php?mode=logout");
         }
