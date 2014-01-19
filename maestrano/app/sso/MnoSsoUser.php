@@ -95,7 +95,7 @@ class MnoSsoUser extends MnoSsoBaseUser
       $conn = $this->connection;
       
       // Create user
-      $lid = $this->_user->add("$this->name $this->surname", $this->email, '', $this->generatePassword());
+      $lid = $this->_user->add($this->email, $this->email, '', $this->generatePassword());
       
       // Create role for new user
       if ($lid) {
@@ -173,7 +173,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    protected function syncLocalDetails()
    {
      if($this->local_id) {
-       $upd = $this->connection->query("UPDATE user SET name = {$this->connection->quote($this->name . ' ' . $this->surname)}, email = {$this->connection->quote($this->email)} WHERE ID = $this->local_id");
+       $upd = $this->connection->query("UPDATE user SET name = {$this->connection->quote($this->email)}, email = {$this->connection->quote($this->email)} WHERE ID = $this->local_id");
        return $upd;
      }
      
