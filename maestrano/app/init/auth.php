@@ -10,12 +10,12 @@ require MAESTRANO_ROOT . '/app/init/base.php';
 //-----------------------------------------------
 // Require your app specific files here
 //-----------------------------------------------
-define('COLLAB_DIR', realpath(MAESTRANO_ROOT . '/../'));
-require COLLAB_DIR . '/include/initfunctions.php';
-require COLLAB_DIR . '/include/class.mylog.php';
-require COLLAB_DIR . '/include/class.user.php';
-require COLLAB_DIR . '/include/class.roles.php';
-require COLLAB_DIR . '/config/standard/config.php';
+define('CL_ROOT', realpath(MAESTRANO_ROOT . '/../'));
+require CL_ROOT . '/include/initfunctions.php';
+require CL_ROOT . '/include/class.mylog.php';
+require CL_ROOT . '/include/class.user.php';
+require CL_ROOT . '/include/class.roles.php';
+require CL_ROOT . '/config/standard/config.php';
 
 //-----------------------------------------------
 // Perform your custom preparation code
