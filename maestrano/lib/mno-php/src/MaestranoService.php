@@ -20,7 +20,6 @@ class MaestranoService
     */
     private function __construct() {
       $this->settings = MnoSettings::getInstance();
-      $this->client_session = & $_SESSION;
     }
    
     /**
@@ -49,11 +48,11 @@ class MaestranoService
     }
    
    /**
-    * Return a pointer to the user session object
+    * Return a reference to the user session object
     *
     * @return session hash
     */
-   public function getClientSession()
+   public function &getClientSession()
    {
      if (!$this->client_session) {
        $this->setClientSession($_SESSION);
@@ -67,7 +66,7 @@ class MaestranoService
     *
     * @var session hash
     */
-   public function setClientSession($session_hash)
+   public function setClientSession(& $session_hash)
    {
      return $this->client_session = & $session_hash;
    }

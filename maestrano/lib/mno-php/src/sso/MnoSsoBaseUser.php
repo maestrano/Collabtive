@@ -6,52 +6,43 @@
  */
 class MnoSsoBaseUser
 {
-  /**
-   * Session Object
-   * @var array
-   */
+  /* Session Object */
   public $session = null;
   
-  /**
-   * User UID
-   * @var string
-   */
+  /* Role in current group */
+  public $group_role = '';
+  
+  /* User UID */
   public $uid = '';
   
-  /**
-   * User email
-   * @var string
-   */
+  /* User Virtual UID - unique across users and groups */
+  public $virtual_uid = '';
+  
+  /* User email */
   public $email = '';
   
-  /**
-   * User name
-   * @var string
-   */
+  /* User virtual email - unique across users and groups */
+  public $virtual_email = '';
+  
+  /* User name */
   public $name = '';
   
-  /**
-   * User surname
-   * @var string
-   */
+  /* User surname */
   public $surname = '';
   
-  /**
-   * Maestrano specific user sso session token
-   * @var string
-   */
+  /* User country - alpha2 code */
+  public $country = '';
+  
+  /* User company name */
+  public $company_name = '';
+  
+  /* Maestrano specific user sso session token */
   public $sso_session = '';
   
-  /**
-   * When to recheck for validity of the sso session
-   * @var datetime
-   */
+  /* When to recheck for validity of the sso session */
   public $sso_session_recheck = null;
   
-  /**
-   * Is user owner of the app
-   * @var boolean
-   */
+  /* Is user owner of the app */
   public $app_owner = false;
   
   /**
@@ -93,20 +84,31 @@ class MnoSsoBaseUser
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public function __construct(OneLogin_Saml_Response $saml_response, &$session = array())
+  public function __construct(OneLogin_Saml_Response $saml_response)
   {
-      // First get the assertion attributes from the SAML
-      // response
+      // Get maestrano service, assertion attributes and session
+      $mno_service = MaestranoService::getInstance();
       $assert_attrs = $saml_response->getAttributes();
       
-      // Populate user attributes from assertions
-      $this->session = &$session;
-      $this->uid = $assert_attrs['mno_uid'][0];
+      // Group related information
+      $this->group_role = $assert_attrs['group_role'][0];
+      
+      // Extract session information
+      $this->session = &$mno_service->getClientSession(); #reference
       $this->sso_session = $assert_attrs['mno_session'][0];
       $this->sso_session_recheck = new DateTime($assert_attrs['mno_session_recheck'][0]);
+      
+      // Extract user metadata
+      $this->uid = $assert_attrs['uid'][0];
+      $this->virtual_uid = $assert_attrs['virtual_uid'][0];
+      $this->email = $assert_attrs['email'][0];
+      $this->virtual_email = $assert_attrs['virtual_email'][0];
       $this->name = $assert_attrs['name'][0];
       $this->surname = $assert_attrs['surname'][0];
-      $this->email = $assert_attrs['email'][0];
+      $this->country = $assert_attrs['country'][0];
+      $this->company_name = $assert_attrs['company_name'][0];
+      
+      // Deprecated
       $this->app_owner = ($assert_attrs['app_owner'][0] == 'true');
       $this->organizations = json_decode($assert_attrs['organizations'][0],true);
   }
@@ -114,7 +116,7 @@ class MnoSsoBaseUser
   /**
    * Try to find a local application user matching the sso one
    * using uid first, then email address.
-   * If a user is found via email address then then setLocalUid
+   * If a user is found via email address then setLocalUid
    * is called to update the local user Maestrano UID
    * ---
    * Internally use the following interface methods:
