@@ -7,7 +7,8 @@
  */
 class MnoSettings
 {
-    
+    /* Singleton instance */
+    protected static $_instance;
     
     /**
      * Maestrano environment
@@ -64,7 +65,7 @@ class MnoSettings
     public function getSsoIdpUrl() {
       $host = $this->config[$this->environment]['sso_host'];
       $path = $this->config[$this->environment]['sso_idp_path'];
-      return "${host}${path}"
+      return "${host}${path}";
     }
     
     /**
@@ -75,7 +76,7 @@ class MnoSettings
     {
       $host = $this->app_host;
       $path = $this->sso_app_init_path;
-      return "${host}${path}"
+      return "${host}${path}";
     }
     
     /**
@@ -86,7 +87,7 @@ class MnoSettings
     {
       $host = $this->app_host;
       $path = $this->sso_app_consume_path;
-      return "${host}${path}"
+      return "${host}${path}";
     }
     
     /**
@@ -98,7 +99,7 @@ class MnoSettings
     {
       $host = $this->config[$this->environment]['sso_host'];
       $path = $this->config[$this->environment]['sso_access_denied_path'];
-      return "${host}${path}"
+      return "${host}${path}";
     }
     
     /**
@@ -110,7 +111,7 @@ class MnoSettings
     {
       $host = $this->config[$this->environment]['sso_host'];
       $path = $this->config[$this->environment]['sso_access_logout_path'];
-      return "${host}${path}"
+      return "${host}${path}";
     }
     
     /**
@@ -130,7 +131,7 @@ class MnoSettings
     {
       $host = $this->config[$this->environment]['sso_host'];
       $path = $this->config[$this->environment]['sso_session_path'];
-      return "${host}${path}"
+      return "${host}${path}";
     }
     
     

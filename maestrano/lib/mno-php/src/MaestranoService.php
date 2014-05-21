@@ -19,7 +19,7 @@ class MaestranoService
     * this is private constructor (use getInstance to get an instance of this class)
     */
     private function __construct() {
-      $this->settings = MnoSetting::getInstance();
+      $this->settings = MnoSettings::getInstance();
       $this->client_session = & $_SESSION;
     }
    
