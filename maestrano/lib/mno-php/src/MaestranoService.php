@@ -7,43 +7,37 @@
  */
 class MaestranoService
 {
-  protected static $_settings;
+  
   protected static $_instance;
-  public static $_after_sso_sign_in_path = '/';
+  protected $after_sso_sign_in_path = '/';
+  protected $settings;
+  protected $client_session;
   
-  /**
-   * constructor
-   *
-   * this is private constructor (use getInstance to get an instance of this class)
-   */
-  private function __construct() {}
-  
-  /**
-   * Configure the service by assigning settings
-   *
-   * @return MaestranoService
-   */
-  public static function configure(MnoSettings $config_settings)
-  {
-      self::$_settings = $config_settings;
-  }
+   /**
+    * constructor
+    *
+    * this is private constructor (use getInstance to get an instance of this class)
+    */
+    private function __construct() {
+      $this->settings = MnoSetting::getInstance();
+      $this->client_session = & $_SESSION;
+    }
    
-  /**
-   * Returns an instance of this class
-   * (this class uses the singleton pattern)
-   *
-   * @return MaestranoService
-   */
-  public static function getInstance()
-  {
-      if ( ! isset(self::$_instance)) {
-          self::$_instance = new self();
-      }
-      return self::$_instance;
-  }
+    /**
+    * Returns an instance of this class
+    * (this class uses the singleton pattern)
+    *
+    * @return MaestranoService
+    */
+    public static function getInstance()
+    {
+        if ( ! isset(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
   
   
-   
    /**
     * Return the maestrano settings
     *
@@ -51,17 +45,27 @@ class MaestranoService
     */
     public function getSettings()
     {
-      return self::$_settings;
+      return MnoSettings::getInstance();
     }
    
    /**
-    * Return the maestrano sso session
+    * Return a user session object
     *
-    * @return MnoSsoSession
+    * @return session hash
     */
-   public function getPhpSession()
+   public function getClientSession()
    {
-     return $_SESSION;
+     return $this->client_session;
+   }
+   
+   /**
+    * Set internal pointer to the session
+    *
+    * @var session hash
+    */
+   public function setClientSession($session_hash)
+   {
+     return $this->client_session = & $session_hash;
    }
    
    /**
@@ -71,7 +75,7 @@ class MaestranoService
     */
     public function getSsoSession()
     {
-      return new MnoSsoSession(self::$_settings, $this->getPhpSession());
+      return new MnoSsoSession($this->settings, $this->getClientSession());
     }
     
     /**
@@ -81,18 +85,8 @@ class MaestranoService
      */
      public function isSsoEnabled()
      {
-       return (self::$_settings && self::$_settings->sso_enabled);
+       return ($this->settings && $this->settings->sso_enabled);
      }
-    
-    /**
-     * Return wether intranet sso mode is enabled (no public pages)
-     *
-     * @return boolean
-     */
-    public function isSsoIntranetEnabled()
-    {
-      return ($this->isSsoEnabled() && self::$_settings->sso_intranet_mode);
-    }
     
     /**
      * Return where the app should redirect internally to initiate
@@ -102,7 +96,7 @@ class MaestranoService
      */
     public function getSsoInitUrl()
     {
-      return self::$_settings->sso_init_url;
+      return $this->settings->getAppSsoInitUrl();
     }
     
     /**
@@ -113,7 +107,7 @@ class MaestranoService
      */
     public function getSsoLogoutUrl()
     {
-      return self::$_settings->sso_access_logout_url;
+      return $this->settings->getSsoAccessLogoutUrl();
     }
     
     /**
@@ -124,7 +118,7 @@ class MaestranoService
      */
     public function getSsoUnauthorizedUrl()
     {
-      return self::$_settings->sso_access_unauthorized_url;
+      return $this->settings->getSsoAccessUnauthorizedUrl();
     }
     
     /**
@@ -132,9 +126,9 @@ class MaestranoService
      *
      * @return string url
      */
-    public static function setAfterSsoSignInPath($path)
+    public function setAfterSsoSignInPath($path)
     {
-      self::$_after_sso_sign_in_path = $path;
+      $this->after_sso_sign_in_path = $path;
     }
     
     /**
@@ -144,14 +138,14 @@ class MaestranoService
      */
     public function getAfterSsoSignInPath()
     {
-      if ($this->getPhpSession()) {
-				$session = & $this->getPhpSession();
+      if ($this->getClientSession()) {
+				$session = $this->getClientSession();
 				if (isset($session['mno_previous_url'])) {
 					return $session['mno_previous_url'];
 				}
         
 			}
-			return self::$_after_sso_sign_in_path;
+			return $this->after_sso_sign_in_path;
     }
   
 }

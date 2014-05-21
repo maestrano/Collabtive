@@ -10,7 +10,7 @@
 //-----------------------------------------------
 define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
 
-error_reporting(0);
+error_reporting(E_ALL);
 
 require MAESTRANO_ROOT . '/app/init/auth.php';
 
@@ -20,5 +20,8 @@ $maestrano = MaestranoService::getInstance();
 // Build SAML request and Redirect to IDP
 $authRequest = new OneLogin_Saml_AuthRequest($maestrano->getSettings()->getSamlSettings());
 $url = $authRequest->getRedirectUrl();
+if($_GET['group_uid']) {
+  $url .= "&" . $_GET['group_uid'];
+}
 
 header("Location: $url");

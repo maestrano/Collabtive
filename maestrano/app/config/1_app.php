@@ -1,16 +1,46 @@
 <?php
-// Get full host (protocal + server host)
-$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
-$full_host = $protocol . $_SERVER['HTTP_HOST'];
+$mno_settings = MnoSettings::getInstance();
 
-// Name of your application
-$mno_settings->app_name = 'bla.app.dev.maestrano.io';
+// Set environment
+// 'test' or 'production'
+$mno_settings->environment = 'test';
 
-// Enable Maestrano SSO for this app
-$mno_settings->sso_enabled = true;
 
-// SSO initialization URL
-$mno_settings->sso_init_url = $full_host . '/maestrano/auth/saml/index.php';
+//---------------------------------------------
+// Set configuration based on environment
+//---------------------------------------------
+if ($mno_settings->environment == 'production') {
+  // Enable Maestrano SSO for this app
+  $mno_settings->sso_enabled = true;
+  
+  // Set your application host
+  $mno_settings->app_host = "https://myservice.com"
 
-// SSO processing url
-$mno_settings->sso_return_url = $full_host . '/maestrano/auth/saml/consume.php';
+  // API Token (obtained on maestrano.com)
+  $mno_settings->api_token = 'production_token_from_maestrano';
+
+  // SSO initialization URL
+  $mno_settings->sso_app_init_path = '/maestrano/auth/saml/index.php';
+
+  // SSO processing url
+  $mno_settings->sso_app_consume_path = '/maestrano/auth/saml/consume.php';
+  
+} else {
+  // Enable Maestrano SSO for this app
+  $mno_settings->sso_enabled = true;
+  
+  // Set your application host
+  $mno_settings->app_host = "http://localhost:8888"
+
+  // API Token (obtained on api-sandbox.maestrano.io)
+  $mno_settings->api_token = 'gfcmbu8269wyi0hjazk4t7o1sndpvrqxl53e1';
+
+  // SSO initialization URL
+  $mno_settings->sso_app_init_path = '/maestrano/auth/saml/index.php';
+
+  // SSO processing url
+  $mno_settings->sso_app_consume_path = '/maestrano/auth/saml/consume.php';
+}
+
+
+
