@@ -15,6 +15,7 @@ require CL_ROOT . '/include/initfunctions.php';
 require CL_ROOT . '/include/class.mylog.php';
 require CL_ROOT . '/include/class.user.php';
 require CL_ROOT . '/include/class.roles.php';
+require CL_ROOT . '/include/class.project.php';
 require CL_ROOT . '/config/standard/config.php';
 
 //-----------------------------------------------

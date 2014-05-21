@@ -15,6 +15,9 @@ class MnoSsoBaseGroup
   /* Company Name */
   public $company_display_name = '';
   
+  /* Country - alpha2 format */
+  public $country = '';
+  
   /* Group Local Id */
   public $local_id = null;
   
@@ -35,6 +38,7 @@ class MnoSsoBaseGroup
       // Extract session information
       $this->uid = $assert_attrs['group_uid'][0];
       $this->free_trial_end_at = new DateTime($assert_attrs['group_end_free_trial'][0]);
+      $this->country = $assert_attrs['country'][0];
       $this->company_name = $assert_attrs['company_name'][0];
   }
   
@@ -67,17 +71,15 @@ class MnoSsoBaseGroup
   }
   
   /**
-   * Create a local group (global customer account) by invoking createLocalUser
-   * and set uid on the newly created user
-   * If createLocalUser returns null then access
-   * is refused to the user
+   * Create a local group (global customer account) by invoking createLocalGroup
+   * and set uid on the newly created group
    */
-   public function createLocalGroupOrDenyAccess()
+   public function createLocalGroupAndMatch()
    {
      if (is_null($this->local_id)) {
-       $this->local_id = $this->createLocalUser();
+       $this->local_id = $this->createLocalGroup();
 
-        // If a user has been created successfully
+        // If a group has been created successfully
         // then make sure UID is set on it
         if ($this->local_id) {
           $this->setLocalUid();
@@ -87,12 +89,20 @@ class MnoSsoBaseGroup
      return $this->local_id;
    }
   
+   /**
+    * Add a user to an existing group if the user is not
+    * part of it already
+    */
+   public function addUser($sso_user,$user_role) {
+     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoGroup class!');
+   }
+  
   /**
-   * Create a local user based on the sso user
+   * Create a local group based on the sso user
    * This method must be re-implemented in MnoSsoGroup
    * (raise an error otherwise)
    *
-   * @return a user ID if found, null otherwise
+   * @return a group ID if created, null otherwise
    */
   protected function createLocalGroup()
   {
@@ -100,13 +110,25 @@ class MnoSsoBaseGroup
   }
   
   /**
-   * Get the ID of a local user via Maestrano UID lookup
+   * Get the ID of a local group via Maestrano UID lookup
    * This method must be re-implemented in MnoSsoGroup
    * (raise an error otherwise)
    *
-   * @return a user ID if found, null otherwise
+   * @return a group ID if found, null otherwise
    */
   protected function getLocalIdByUid()
+  {
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoGroup class!');
+  }
+  
+  /**
+   * Set the Maestrano UID on a local group
+   * This method must be re-implemented in MnoSsoGroup
+   * (raise an error otherwise)
+   *
+   * @return boolean
+   */
+  protected function setLocalUid()
   {
     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoGroup class!');
   }

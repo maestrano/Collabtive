@@ -120,7 +120,7 @@ class MnoSsoUser extends MnoSsoBaseUser
     $conn = $this->connection;
     
     // Create user
-    $lid = $this->_user->add($this->email, $this->email, '', $this->generatePassword());
+    $lid = $this->_user->add($this->getEmail(), $this->getEmail(), '', $this->generatePassword());
     
     // Create role for new user
     if ($lid) {
@@ -154,7 +154,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    */
   protected function getLocalIdByUid()
   {
-    $result = $this->connection->query("SELECT ID FROM user WHERE mno_uid = {$this->connection->quote($this->uid)} LIMIT 1")->fetch();
+    $result = $this->connection->query("SELECT ID FROM user WHERE mno_uid = {$this->connection->quote($this->getUid())} LIMIT 1")->fetch();
     
     if ($result && $result['ID']) {
       return $result['ID'];
@@ -172,7 +172,7 @@ class MnoSsoUser extends MnoSsoBaseUser
    protected function syncLocalDetails()
    {
      if($this->local_id) {
-       $upd = $this->connection->query("UPDATE user SET name = {$this->connection->quote($this->email)}, email = {$this->connection->quote($this->email)} WHERE ID = $this->local_id");
+       $upd = $this->connection->query("UPDATE user SET name = {$this->connection->quote($this->getEmail())}, email = {$this->connection->quote($this->getEmail())} WHERE ID = $this->local_id");
        return $upd;
      }
      
@@ -187,7 +187,7 @@ class MnoSsoUser extends MnoSsoBaseUser
   protected function setLocalUid()
   {
     if($this->local_id) {
-      $upd = $this->connection->query("UPDATE user SET mno_uid = {$this->connection->quote($this->uid)} WHERE ID = $this->local_id");
+      $upd = $this->connection->query("UPDATE user SET mno_uid = {$this->connection->quote($this->getUid())} WHERE ID = $this->local_id");
       return $upd;
     }
     

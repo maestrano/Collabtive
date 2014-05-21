@@ -20,6 +20,7 @@ define('MNO_PHP_DIR', MAESTRANO_ROOT . '/lib/mno-php/src/');
 require MNO_PHP_DIR . 'MnoSettings.php';
 require MNO_PHP_DIR . 'MaestranoService.php';
 require MNO_PHP_DIR . 'sso/MnoSsoBaseUser.php';
+require MNO_PHP_DIR . 'sso/MnoSsoBaseGroup.php';
 require MNO_PHP_DIR . 'sso/MnoSsoSession.php';
 
 //-----------------------------------------------
@@ -27,3 +28,4 @@ require MNO_PHP_DIR . 'sso/MnoSsoSession.php';
 //-----------------------------------------------
 define('MNO_APP_DIR', MAESTRANO_ROOT . '/app/');
 require MNO_APP_DIR . '/sso/MnoSsoUser.php';
+require MNO_APP_DIR . '/sso/MnoSsoGroup.php';

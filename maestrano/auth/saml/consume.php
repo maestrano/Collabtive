@@ -56,7 +56,7 @@ try {
         
         // If user was not matched then attempt
         // to create a new local user
-        if (!$sso_user->isMatched())) {
+        if (!$sso_user->isMatched()) {
           $sso_user->createLocalUserOrDenyAccess();
         }
         
@@ -67,11 +67,12 @@ try {
           $sso_group->matchLocal();
           
           // If group does not exist then create it
-          if (is_null($sso_group->local_id)) {
-            $user_group_linked = $sso_group->createLocalGroup($sso_user, $sso_user->group_role);
-          } else {
-            $user_group_linked = $sso_group->addUser($sso_user, $sso_user->group_role);
+          if (!$sso_group->isMatched()) {
+            $user_group_linked = $sso_group->createLocalGroupAndMatch();
           }
+          
+          // Add user to the group (if not already)
+          $user_group_linked = $sso_group->addUser($sso_user, $sso_user->group_role);
         }
         
         // If user is matched then sign it in
