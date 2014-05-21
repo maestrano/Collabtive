@@ -18,6 +18,18 @@ class MnoSettings
     public $environment = 'test';
     
     /**
+     * User creation strategy
+     * 'real' or 'virtual'
+     * - Use 'real' if your application allows a user to
+     * be part of several groups.
+     * - Use 'virtual' if your application can only allow
+     * one group per user.
+     * @var string
+     */
+    public $user_creation_mode = 'virtual';
+    
+    
+    /**
      * Your application API token from
      * Maestrano or API Sandbox
      * @var string

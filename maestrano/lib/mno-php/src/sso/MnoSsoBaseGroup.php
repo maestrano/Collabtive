@@ -12,9 +12,11 @@ class MnoSsoBaseGroup
   /* When does free trial terminate */
   public $free_trial_end_at = '';
   
+  /* Company Name */
+  public $company_display_name = '';
+  
   /* Group Local Id */
   public $local_id = null;
-  
   
   /**
    * Construct the MnoSsoBaseUser object from a SAML response
@@ -33,6 +35,7 @@ class MnoSsoBaseGroup
       // Extract session information
       $this->uid = $assert_attrs['group_uid'][0];
       $this->free_trial_end_at = new DateTime($assert_attrs['group_end_free_trial'][0]);
+      $this->company_name = $assert_attrs['company_name'][0];
   }
   
   /**
@@ -50,6 +53,17 @@ class MnoSsoBaseGroup
     $this->local_id = $this->getLocalIdByUid();
     
     return $this->local_id;
+  }
+  
+  /**
+   * Return wether the group was matched or not
+   * Check if the local_id is null or not
+   * 
+   * @return boolean
+   */
+  public function isMatched()
+  {
+    return !is_null($this->local_id);
   }
   
   /**

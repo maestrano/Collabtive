@@ -47,21 +47,36 @@ $samlResponse = new OneLogin_Saml_Response($maestrano->getSettings()->getSamlSet
 try {
     if ($samlResponse->isValid()) {
         
-        // Get Maestrano User
+        // Get Maestrano User and group
         $sso_user = new MnoSsoUser($samlResponse, $opts);
+        $sso_group = new MnoSsoGroup($samlResponse, $opts);
         
         // Try to match the user with a local one
         $sso_user->matchLocal();
         
         // If user was not matched then attempt
         // to create a new local user
-        if (is_null($sso_user->local_id)) {
+        if (!$sso_user->isMatched())) {
           $sso_user->createLocalUserOrDenyAccess();
+        }
+        
+        // Once user is matched/created
+        // Deal with group association
+        $user_group_linked = false;
+        if ($sso_user->isMatched()) {
+          $sso_group->matchLocal();
+          
+          // If group does not exist then create it
+          if (is_null($sso_group->local_id)) {
+            $user_group_linked = $sso_group->createLocalGroup($sso_user, $sso_user->group_role);
+          } else {
+            $user_group_linked = $sso_group->addUser($sso_user, $sso_user->group_role);
+          }
         }
         
         // If user is matched then sign it in
         // Refuse access otherwise
-        if ($sso_user->local_id) {
+        if ($sso_user->isMatched() && $sso_group->isMatched() && $user_group_linked) {
           $sso_user->signIn();
           header("Location: " . $maestrano->getAfterSsoSignInPath());
         } else {

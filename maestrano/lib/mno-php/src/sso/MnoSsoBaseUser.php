@@ -6,6 +6,9 @@
  */
 class MnoSsoBaseUser
 {
+  /* Settings Object */
+  public $settings;
+  
   /* Session Object */
   public $session = null;
   
@@ -88,9 +91,11 @@ class MnoSsoBaseUser
   {
       // Get maestrano service, assertion attributes and session
       $mno_service = MaestranoService::getInstance();
+      $this->settings = MnoSettings::getInstance();
       $assert_attrs = $saml_response->getAttributes();
       
       // Group related information
+      $this->group_uid  = $assert_attrs['group_uid'][0];
       $this->group_role = $assert_attrs['group_role'][0];
       
       // Extract session information
@@ -113,6 +118,32 @@ class MnoSsoBaseUser
       $this->organizations = json_decode($assert_attrs['organizations'][0],true);
   }
   
+  /* 
+   * Result depends on the MnoSettings#user_creation_mode:
+   * 'real': return the real maestrano uid (set this if users can be part of multiple groups)
+   * 'virtual': return a composite maestrano uid (set this if users can only be part of one group)
+   */
+  public function getUid() {
+    if ($this->settings->user_creation_mode == 'real') {
+      return $this->uid;
+    } else {
+      return $this->virtual_uid;
+    }
+  }
+  
+  /* 
+   * Result depends on the MnoSettings#user_creation_mode:
+   * 'real': return the real maestrano email (set this if users can be part of multiple groups)
+   * 'virtual': return a composite maestrano email (set this if users can only be part of one group)
+   */
+  public function getEmail() {
+    if ($this->settings->user_creation_mode == 'real') {
+      return $this->email;
+    } else {
+      return $this->virtual_email;
+    }
+  }
+  
   /**
    * Try to find a local application user matching the sso one
    * using uid first, then email address.
@@ -121,7 +152,6 @@ class MnoSsoBaseUser
    * ---
    * Internally use the following interface methods:
    *  - getLocalIdByUid
-   *  - getLocalIdByEmail
    *  - setLocalUid
    * 
    * @return local_id if a local user matched, null otherwise
@@ -130,17 +160,6 @@ class MnoSsoBaseUser
   {
     // Try to get the local id from uid
     $this->local_id = $this->getLocalIdByUid();
-    
-    // Get local id via email if previous search
-    // was unsuccessful
-    if (is_null($this->local_id)) {
-      $this->local_id = $this->getLocalIdByEmail();
-      
-      // Set Maestrano UID on user
-      if ($this->local_id) {
-        $this->setLocalUid();
-      }
-    }
     
     // Sync local details if we have a match
     if ($this->local_id) {
@@ -151,21 +170,16 @@ class MnoSsoBaseUser
   }
   
   /**
-   * Return whether the user is private (
-   * local account or app owner or part of
-   * organization owning this app) or public
-   * (no link whatsoever with this application)
-   *
-   * @return 'public' or 'private'
+   * Return wether the user was matched or not
+   * Check if the local_id is null or not
+   * 
+   * @return boolean
    */
-  public function accessScope()
+  public function isMatched()
   {
-    if ($this->local_id || $this->app_owner || count($this->organizations) > 0) {
-      return 'private';
-    }
-      
-    return 'public';
+    return !is_null($this->local_id);
   }
+  
   
   /**
    * Create a local user by invoking createLocalUser

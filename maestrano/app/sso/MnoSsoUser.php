@@ -2,7 +2,33 @@
 
 /**
  * Configure App specific behavior for 
- * Maestrano SSO
+ * Maestrano SSO User matching and creation
+ *
+ * Summary of attributes available:
+ * ================================
+ * Group related information
+ * --------------------------
+ *  -> group_uid: universal id of group the user is logging in via
+ *  -> group_role: role of user within the above group
+ *
+ * User identification:
+ * --------------------
+ * You should set MnoSettings#user_creation_mode to 'real' or 'virtual'
+ * depending on whether your users can be part of multiple groups or not
+ * and then use the getUid() and getEmail() methods.
+ * Use the attributes below only if you know what you're doing
+ *  -> uid: user maestrano id
+ *  -> virtual_uid: truly unique maestrano uid across users and groups
+ *  -> email: email address of the user
+ *  -> virtual_email: truly unique maestrano email address across users and groups
+ *
+ *
+ * User metadata
+ * --------------
+ *  -> name: user first name
+ *  -> surname: user last name
+ *  -> country: user country in alpha2 format
+ *  -> company_name: user company name (not a mandatory field - might be blank)
  */
 class MnoSsoUser extends MnoSsoBaseUser
 {
@@ -90,43 +116,32 @@ class MnoSsoUser extends MnoSsoBaseUser
   {
     $lid = null;
     
-    if ($this->accessScope() == 'private') {
-      // First set $conn variable (used internally by collabtive methods)
-      $conn = $this->connection;
-      
-      // Create user
-      $lid = $this->_user->add($this->email, $this->email, '', $this->generatePassword());
-      
-      // Create role for new user
-      if ($lid) {
-        $this->_roles->assign($this->getRoleIdToAssign(), $lid);
-      }
+    // First set $conn variable (used internally by collabtive methods)
+    $conn = $this->connection;
+    
+    // Create user
+    $lid = $this->_user->add($this->email, $this->email, '', $this->generatePassword());
+    
+    // Create role for new user
+    if ($lid) {
+      $this->_roles->assign($this->getRoleToAssign(), $lid);
     }
     
     return $lid;
   }
   
   /**
-   * Create the role to give to the user based on context
-   * If the user is the owner of the app or at least Admin
-   * for each organization, then it is given the role of 'Admin'.
-   * Return 'User' role otherwise
+   * Get application wide role to give to the user based on context
+   * This step should not be required for a cloud application as role
+   * should be set at the "User <-> Group" relation level
    *
-   * @return the ID of the user created, null otherwise
+   * @return the ID of the role, null otherwise
    */
-  public function getRoleIdToAssign() {
+  public function getRoleToAssign() {
     $role_id = 2; // User
     
-    if ($this->app_owner) {
+    if ($this->group_role == "Admin" || $this->group_role == "Super Admin") {
       $role_id = 1; // Admin
-    } else {
-      foreach ($this->organizations as $organization) {
-        if ($organization['role'] == 'Admin' || $organization['role'] == 'Super Admin') {
-          $role_id = 1;
-        } else {
-          $role_id = 2;
-        }
-      }
     }
     
     return $role_id;
@@ -140,22 +155,6 @@ class MnoSsoUser extends MnoSsoBaseUser
   protected function getLocalIdByUid()
   {
     $result = $this->connection->query("SELECT ID FROM user WHERE mno_uid = {$this->connection->quote($this->uid)} LIMIT 1")->fetch();
-    
-    if ($result && $result['ID']) {
-      return $result['ID'];
-    }
-    
-    return null;
-  }
-  
-  /**
-   * Get the ID of a local user via email lookup
-   *
-   * @return a user ID if found, null otherwise
-   */
-  protected function getLocalIdByEmail()
-  {
-    $result = $this->connection->query("SELECT ID FROM user WHERE email = {$this->connection->quote($this->email)} LIMIT 1")->fetch();
     
     if ($result && $result['ID']) {
       return $result['ID'];

@@ -5,6 +5,17 @@ $mno_settings = MnoSettings::getInstance();
 // 'test' or 'production'
 $mno_settings->environment = 'test';
 
+/**
+ * User creation strategy: 'real' or 'virtual'
+ *
+ * Use 'real' if your application allows a user to
+ * be part of several groups.
+ *
+ * Use 'virtual' if your application can only allow
+ * one group per user.
+ */
+$mno_settings->user_creation_mode = 'virtual';
+
 
 //---------------------------------------------
 // Set configuration based on environment
@@ -24,7 +35,7 @@ if ($mno_settings->environment == 'production') {
 
   // SSO processing url
   $mno_settings->sso_app_consume_path = '/maestrano/auth/saml/consume.php';
-  
+
 } else {
   // Enable Maestrano SSO for this app
   $mno_settings->sso_enabled = true;
