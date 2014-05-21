@@ -8,31 +8,26 @@ class MnoSsoSession
 {
   /**
    * Maestrano Settings object
-   * @var MnoSettings
    */
   public $settings = null;
   
   /**
    * Session object
-   * @var MnoSettings
    */
   public $session = null;
   
   /**
    * User UID
-   * @var string
    */
   public $uid = '';
   
   /**
    * Maestrano SSO token
-   * @var string
    */
   public $token = '';
   
   /**
    * When to recheck for validity of the sso session
-   * @var datetime
    */
   public $recheck = null;
   
@@ -45,14 +40,17 @@ class MnoSsoSession
    *   A session object, usually $_SESSION
    *
    */
-  public function __construct(MnoSettings $mno_settings,&$session)
-  {
+  public function __construct()
+  {   
+      // Get Maestrano service
+      $mno_service = MaestranoService::getInstance();
+      
       // Populate attributes from params
-      $this->settings = $mno_settings;
-      $this->session = & $session;
-      $this->uid = $session['mno_uid'];
-      $this->token = $session['mno_session'];
-      $this->recheck = new DateTime($session['mno_session_recheck']);
+      $this->settings = MnoSettings::getInstance();
+      $this->session = $mno_service->getClientSession();
+      $this->uid = $this->session['mno_uid'];
+      $this->token = $this->session['mno_session'];
+      $this->recheck = new DateTime($this->session['mno_session_recheck']);
   }
   
   /**
@@ -80,7 +78,7 @@ class MnoSsoSession
     */
     public function sessionCheckUrl()
     {
-      $url = $this->settings->getSsoSessionCheckUrl . '/' . $this->uid . '?session=' . $this->token;
+      $url = $this->settings->getSsoSessionCheckUrl() . '/' . $this->uid . '?session=' . $this->token;
       return $url;
     }
     

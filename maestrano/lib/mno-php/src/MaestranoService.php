@@ -49,12 +49,16 @@ class MaestranoService
     }
    
    /**
-    * Return a user session object
+    * Return a pointer to the user session object
     *
     * @return session hash
     */
    public function getClientSession()
    {
+     if (!$this->client_session) {
+       $this->setClientSession($_SESSION);
+     }
+     
      return $this->client_session;
    }
    
@@ -75,7 +79,7 @@ class MaestranoService
     */
     public function getSsoSession()
     {
-      return new MnoSsoSession($this->settings, $this->getClientSession());
+      return new MnoSsoSession();
     }
     
     /**

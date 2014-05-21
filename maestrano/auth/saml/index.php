@@ -20,8 +20,10 @@ $maestrano = MaestranoService::getInstance();
 // Build SAML request and Redirect to IDP
 $authRequest = new OneLogin_Saml_AuthRequest($maestrano->getSettings()->getSamlSettings());
 $url = $authRequest->getRedirectUrl();
-if($_GET['group_uid']) {
-  $url .= "&" . $_GET['group_uid'];
+
+// Pass the group_id on 
+if(array_key_exists('group_id', $_GET)) {
+  $url .= "&group_id=" . $_GET['group_id'];
 }
 
 header("Location: $url");
