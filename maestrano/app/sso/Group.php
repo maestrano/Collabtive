@@ -13,7 +13,7 @@
  *  -> country: (user) country in alpha2 format
  *  -> company_name: (user) company name (not a mandatory field - might be blank)
  */
-class MnoSsoGroup extends Maestrano_Sso_BaseGroup
+class Maestrano_Sso_Group extends Maestrano_Sso_BaseGroup
 {
   /**
    * Database connection
@@ -39,7 +39,7 @@ class MnoSsoGroup extends Maestrano_Sso_BaseGroup
   
   /**
    * Get the ID of a local group via Maestrano UID lookup
-   * This method must be re-implemented in MnoSsoGroup
+   * This method must be re-implemented in Maestrano_Sso_Group
    * (raise an error otherwise)
    *
    * @return a group ID if found, null otherwise
@@ -57,7 +57,7 @@ class MnoSsoGroup extends Maestrano_Sso_BaseGroup
   
   /**
    * Create a local group based on the sso user
-   * This method must be re-implemented in MnoSsoGroup
+   * This method must be re-implemented in Maestrano_Sso_Group
    * (raise an error otherwise)
    *
    * @return a group ID if created, null otherwise
@@ -112,7 +112,7 @@ class MnoSsoGroup extends Maestrano_Sso_BaseGroup
   
   /**
    * Set the Maestrano UID on a local group
-   * This method must be re-implemented in MnoSsoGroup
+   * This method must be re-implemented in Maestrano_Sso_Group
    * (raise an error otherwise)
    *
    * @return boolean

@@ -12,7 +12,7 @@ define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
 
 error_reporting(E_ALL);
 
-require MAESTRANO_ROOT . '/app/init/auth.php';
+require MAESTRANO_ROOT . '/app/init/auth_controllers.php';
 
 // Get Maestrano Service
 $maestrano = Maestrano::getInstance();

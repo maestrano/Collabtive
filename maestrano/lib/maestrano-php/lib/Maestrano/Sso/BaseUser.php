@@ -204,56 +204,56 @@ class Maestrano_Sso_BaseUser
   
   /**
    * Create a local user based on the sso user
-   * This method must be re-implemented in MnoSsoUser
+   * This method must be re-implemented in Maestrano_Sso_User
    * (raise an error otherwise)
    *
    * @return a user ID if found, null otherwise
    */
   protected function createLocalUser()
   {
-    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_User class!');
   }
   
   /**
    * Get the ID of a local user via Maestrano UID lookup
-   * This method must be re-implemented in MnoSsoUser
+   * This method must be re-implemented in Maestrano_Sso_User
    * (raise an error otherwise)
    *
    * @return a user ID if found, null otherwise
    */
   protected function getLocalIdByUid()
   {
-    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_User class!');
   }
   
   /**
    * Get the ID of a local user via email lookup
-   * This method must be re-implemented in MnoSsoUser
+   * This method must be re-implemented in Maestrano_Sso_User
    * (raise an error otherwise)
    *
    * @return a user ID if found, null otherwise
    */
   protected function getLocalIdByEmail()
   {
-    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_User class!');
   }
   
   /**
    * Set the Maestrano UID on a local user via email lookup
-   * This method must be re-implemented in MnoSsoUser
+   * This method must be re-implemented in Maestrano_Sso_User
    * (raise an error otherwise)
    *
    * @return a user ID if found, null otherwise
    */
   protected function setLocalUid()
   {
-    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_User class!');
   }
   
   /**
    * Set all 'soft' details on the user (like name, surname, email)
    * This is a convenience method that must be implemented in
-   * MnoSsoUser but is not mandatory.
+   * Maestrano_Sso_User but is not mandatory.
    *
    * @return boolean whether the user was synced or not
    */
@@ -267,7 +267,7 @@ class Maestrano_Sso_BaseUser
    * set the mno_uid, mno_session and mno_session_recheck
    * in session.
    * It is expected that this method get extended with
-   * application specific behavior in the MnoSsoUser class
+   * application specific behavior in the Maestrano_Sso_User class
    *
    * @return boolean whether the user was successfully signedIn or not
    */
@@ -299,7 +299,7 @@ class Maestrano_Sso_BaseUser
   
   /**
    * Set user in session. Called by signIn method.
-   * This method should be overriden in MnoSsoUser to
+   * This method should be overriden in Maestrano_Sso_User to
    * reflect the app specific way of putting an authenticated
    * user in session.
    *
@@ -307,6 +307,6 @@ class Maestrano_Sso_BaseUser
    */
    protected function setInSession()
    {
-     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoUser class!');
+     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_User class!');
    }
 }

@@ -30,7 +30,7 @@
  *  -> country: user country in alpha2 format
  *  -> company_name: user company name (not a mandatory field - might be blank)
  */
-class MnoSsoUser extends Maestrano_Sso_BaseUser
+class Maestrano_Sso_User extends Maestrano_Sso_BaseUser
 {
   /**
    * Database connection

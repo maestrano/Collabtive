@@ -5,7 +5,7 @@
 if (!defined('MAESTRANO_ROOT')) {
   define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
 }
-require MAESTRANO_ROOT . '/app/init/base.php';
+require MAESTRANO_ROOT . '/app/init/maestrano.php';
 
 //-----------------------------------------------
 // Require your app specific files here
@@ -21,7 +21,7 @@ require CL_ROOT . '/config/standard/config.php';
 //-----------------------------------------------
 // Perform your custom preparation code
 //-----------------------------------------------
-// Set options to pass to the MnoSsoUser
+// Set options to pass to the Maestrano_Sso_User
 $opts = array();
 if (!empty($db_name) and !empty($db_user)) {
     // $tdb = new datenbank();

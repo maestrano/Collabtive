@@ -26,15 +26,8 @@ if (!empty($db_name) and !empty($db_user)) {
 
 // Hook:Maestrano
 // Load Maestrano
-require CL_ROOT . '/maestrano/app/init/base.php';
-$maestrano = MaestranoService::getInstance();
-// Require authentication straight away if intranet
-// mode enabled
-if ($maestrano->isSsoIntranetEnabled()) {
-  if (!$maestrano->getSsoSession()->isValid()) {
-    header("Location: " . $maestrano->getSsoInitUrl());
-  }
-}
+require CL_ROOT . '/maestrano/app/init/maestrano.php';
+$maestrano = Maestrano::getInstance();
 
 // Start template engine
 $template = new Smarty();

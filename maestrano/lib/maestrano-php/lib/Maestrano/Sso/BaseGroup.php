@@ -94,43 +94,43 @@ class Maestrano_Sso_BaseGroup
     * part of it already
     */
    public function addUser($sso_user,$user_role) {
-     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoGroup class!');
+     throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_Group class!');
    }
   
   /**
    * Create a local group based on the sso user
-   * This method must be re-implemented in MnoSsoGroup
+   * This method must be re-implemented in Maestrano_Sso_Group
    * (raise an error otherwise)
    *
    * @return a group ID if created, null otherwise
    */
   protected function createLocalGroup()
   {
-    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoGroup class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_Group class!');
   }
   
   /**
    * Get the ID of a local group via Maestrano UID lookup
-   * This method must be re-implemented in MnoSsoGroup
+   * This method must be re-implemented in Maestrano_Sso_Group
    * (raise an error otherwise)
    *
    * @return a group ID if found, null otherwise
    */
   protected function getLocalIdByUid()
   {
-    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoGroup class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_Group class!');
   }
   
   /**
    * Set the Maestrano UID on a local group
-   * This method must be re-implemented in MnoSsoGroup
+   * This method must be re-implemented in Maestrano_Sso_Group
    * (raise an error otherwise)
    *
    * @return boolean
    */
   protected function setLocalUid()
   {
-    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoSsoGroup class!');
+    throw new Exception('Function '. __FUNCTION__ . ' must be overriden in Maestrano_Sso_Group class!');
   }
   
 }
