@@ -4,7 +4,7 @@
  * Properly format a User received from Maestrano 
  * SAML IDP
  */
-class MnoSsoBaseGroup
+class Maestrano_Sso_BaseGroup
 {
   /* User UID */
   public $uid = '';
@@ -22,16 +22,16 @@ class MnoSsoBaseGroup
   public $local_id = null;
   
   /**
-   * Construct the MnoSsoBaseUser object from a SAML response
+   * Construct the Maestrano_Sso_BaseUser object from a SAML response
    *
-   * @param OneLogin_Saml_Response $saml_response
+   * @param Maestrano_Saml_Response $saml_response
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public function __construct(OneLogin_Saml_Response $saml_response)
+  public function __construct(Maestrano_Saml_Response $saml_response)
   {
       // Get maestrano service, assertion attributes and session
-      $mno_service = MaestranoService::getInstance();
+      $mno_service = Maestrano::getInstance();
       $assert_attrs = $saml_response->getAttributes();
       $this->session = $mno_service->getClientSession();
       

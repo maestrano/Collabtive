@@ -3,24 +3,24 @@
 /**
  * Create a SAML authorization request.
  */
-class OneLogin_Saml_AuthRequest
+class Maestrano_Saml_AuthRequest
 {
-    const ID_PREFIX = 'ONELOGIN';
+    const ID_PREFIX = 'Maestrano';
 
     /**
      * A SamlResponse class provided to the constructor.
-     * @var OneLogin_Saml_Settings
+     * @var Maestrano_Saml_Settings
      */
     protected $_settings;
 
     /**
      * Construct the response object.
      *
-     * @param OneLogin_Saml_Settings $settings
+     * @param Maestrano_Saml_Settings $settings
      *   A SamlResponse settings object containing the necessary
      *   x509 certicate to decode the XML.
      */
-    public function __construct(OneLogin_Saml_Settings $settings)
+    public function __construct(Maestrano_Saml_Settings $settings)
     {
         $this->_settings = $settings;
     }

@@ -4,7 +4,7 @@
  * Helper class used to check the validity
  * of a Maestrano session
  */
-class MnoSsoSession
+class Maestrano_Sso_Session
 {
   /**
    * Maestrano Settings object
@@ -32,9 +32,9 @@ class MnoSsoSession
   public $recheck = null;
   
   /**
-   * Construct the MnoSsoSession object
+   * Construct the Maestrano_Sso_Session object
    *
-   * @param MnoSettings $mno_settings
+   * @param Maestrano_Settings $mno_settings
    *   A Maestrano Settings object
    * @param Array $session
    *   A session object, usually $_SESSION
@@ -43,10 +43,10 @@ class MnoSsoSession
   public function __construct()
   {   
       // Get Maestrano service
-      $mno_service = MaestranoService::getInstance();
+      $mno_service = Maestrano::getInstance();
       
       // Populate attributes from params
-      $this->settings = MnoSettings::getInstance();
+      $this->settings = Maestrano_Settings::getInstance();
       $this->session = $mno_service->getClientSession();
       $this->uid = $this->session['mno_uid'];
       $this->token = $this->session['mno_session'];

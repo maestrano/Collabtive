@@ -3,11 +3,11 @@
 /**
  * Determine if the SAML response is valid using a provided x509 certificate.
  */
-class OneLogin_Saml_XmlSec
+class Maestrano_Saml_XmlSec
 {
     /**
      * A SamlResponse class provided to the constructor.
-     * @var OneLogin_Saml_Settings
+     * @var Maestrano_Saml_Settings
      */
     protected $_settings;
 
@@ -20,11 +20,11 @@ class OneLogin_Saml_XmlSec
     /**
      * Construct the SamlXmlSec object.
      *
-     * @param OneLogin_Saml_Settings $settings A SamlResponse settings object containing the necessary
+     * @param Maestrano_Saml_Settings $settings A SamlResponse settings object containing the necessary
      *                                          x509 certicate to test the document.
-     * @param OneLogin_Saml_Response $response The document to test.
+     * @param Maestrano_Saml_Response $response The document to test.
      */
-    public function __construct(OneLogin_Saml_Settings $settings, OneLogin_Saml_Response $response)
+    public function __construct(Maestrano_Saml_Settings $settings, Maestrano_Saml_Response $response)
     {
         $this->_settings = $settings;
         $this->_document = clone $response->document;

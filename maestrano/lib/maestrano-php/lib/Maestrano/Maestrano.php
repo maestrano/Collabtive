@@ -5,7 +5,7 @@
  *
  * These settings need to be filled in by the user prior to being used.
  */
-class MaestranoService
+class Maestrano
 {
   
   protected static $_instance;
@@ -19,14 +19,14 @@ class MaestranoService
     * this is private constructor (use getInstance to get an instance of this class)
     */
     private function __construct() {
-      $this->settings = MnoSettings::getInstance();
+      $this->settings = Maestrano_Settings::getInstance();
     }
    
     /**
     * Returns an instance of this class
     * (this class uses the singleton pattern)
     *
-    * @return MaestranoService
+    * @return Maestrano
     */
     public static function getInstance()
     {
@@ -40,11 +40,11 @@ class MaestranoService
    /**
     * Return the maestrano settings
     *
-    * @return MnoSsoSession
+    * @return Maestrano_Sso_Session
     */
     public function getSettings()
     {
-      return MnoSettings::getInstance();
+      return Maestrano_Settings::getInstance();
     }
    
    /**
@@ -74,11 +74,11 @@ class MaestranoService
    /**
     * Return the maestrano sso session
     *
-    * @return MnoSsoSession
+    * @return Maestrano_Sso_Session
     */
     public function getSsoSession()
     {
-      return new MnoSsoSession();
+      return new Maestrano_Sso_Session();
     }
     
     /**
@@ -149,6 +149,25 @@ class MaestranoService
         
 			}
 			return $this->after_sso_sign_in_path;
+    }
+    
+    /**
+     * Ping maestrano - Allow you to check that
+     * your API token is working properly
+     */
+    public function ping()
+    {
+      $api_url = $this->settings->getApiUrl();
+      $endpoint = 'ping';
+      $api_token = $this->settings->api_token;
+      
+      // Build request
+      // $req = new HttpRequest("${api_url}${endpoint}", HttpRequest::METH_GET);
+      // $req->setBasicAuth($api_token, "");
+      // 
+      // // Get response
+      // $response = $req->send();
+      // json_decode($response,true);
     }
   
 }

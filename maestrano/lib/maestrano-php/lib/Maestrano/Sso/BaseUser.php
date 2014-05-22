@@ -4,7 +4,7 @@
  * Properly format a User received from Maestrano 
  * SAML IDP
  */
-class MnoSsoBaseUser
+class Maestrano_Sso_BaseUser
 {
   /* Settings Object */
   public $settings;
@@ -81,17 +81,17 @@ class MnoSsoBaseUser
   
   
   /**
-   * Construct the MnoSsoBaseUser object from a SAML response
+   * Construct the Maestrano_Sso_BaseUser object from a SAML response
    *
-   * @param OneLogin_Saml_Response $saml_response
+   * @param Maestrano_Saml_Response $saml_response
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public function __construct(OneLogin_Saml_Response $saml_response)
+  public function __construct(Maestrano_Saml_Response $saml_response)
   {
       // Get maestrano service, assertion attributes and session
-      $mno_service = MaestranoService::getInstance();
-      $this->settings = MnoSettings::getInstance();
+      $mno_service = Maestrano::getInstance();
+      $this->settings = Maestrano_Settings::getInstance();
       $assert_attrs = $saml_response->getAttributes();
       
       // Group related information
@@ -119,7 +119,7 @@ class MnoSsoBaseUser
   }
   
   /* 
-   * Result depends on the MnoSettings#user_creation_mode:
+   * Result depends on the Maestrano_Settings#user_creation_mode:
    * 'real': return the real maestrano uid (set this if users can be part of multiple groups)
    * 'virtual': return a composite maestrano uid (set this if users can only be part of one group)
    */
@@ -132,7 +132,7 @@ class MnoSsoBaseUser
   }
   
   /* 
-   * Result depends on the MnoSettings#user_creation_mode:
+   * Result depends on the Maestrano_Settings#user_creation_mode:
    * 'real': return the real maestrano email (set this if users can be part of multiple groups)
    * 'virtual': return a composite maestrano email (set this if users can only be part of one group)
    */

@@ -3,7 +3,7 @@
 /**
  * Create SAML2 Metadata documents
  */
-class OneLogin_Saml_Metadata
+class Maestrano_Saml_Metadata
 {
     /**
      * How long should the metadata be valid?
@@ -12,15 +12,15 @@ class OneLogin_Saml_Metadata
 
     /**
      * Service settings
-     * @var OneLogin_Saml_Settings
+     * @var Maestrano_Saml_Settings
      */
     protected $_settings;
 
     /**
      * Create a new Metadata document
-     * @param OneLogin_Saml_Settings $settings
+     * @param Maestrano_Saml_Settings $settings
      */
-    public function __construct(OneLogin_Saml_Settings $settings)
+    public function __construct(Maestrano_Saml_Settings $settings)
     {
         $this->_settings = $settings;
     }

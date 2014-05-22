@@ -3,10 +3,10 @@
 /**
  * Parse the SAML response and maintain the XML for it.
  */
-class OneLogin_Saml_Response
+class Maestrano_Saml_Response
 {
     /**
-     * @var OneLogin_Saml_Settings
+     * @var Maestrano_Saml_Settings
      */
     protected $_settings;
 
@@ -25,10 +25,10 @@ class OneLogin_Saml_Response
     /**
      * Construct the response object.
      *
-     * @param OneLogin_Saml_Settings $settings Settings containing the necessary X.509 certificate to decode the XML.
+     * @param Maestrano_Saml_Settings $settings Settings containing the necessary X.509 certificate to decode the XML.
      * @param string $assertion A UUEncoded SAML assertion from the IdP.
      */
-    public function __construct(OneLogin_Saml_Settings $settings, $assertion)
+    public function __construct(Maestrano_Saml_Settings $settings, $assertion)
     {
         $this->_settings = $settings;
         $this->assertion = base64_decode($assertion);
@@ -44,7 +44,7 @@ class OneLogin_Saml_Response
      */
     public function isValid()
     {
-        $xmlSec = new OneLogin_Saml_XmlSec($this->_settings, $this);
+        $xmlSec = new Maestrano_Saml_XmlSec($this->_settings, $this);
         return $xmlSec->isValid();
     }
 
