@@ -140,12 +140,13 @@ class MnoSettings
      * The Maestrano endpoint in charge of providing session information
      * @var string
      */
-    public function getSsoSessionCheckUrl() 
+    public function getSsoSessionCheckUrl($user_id,$sso_session) 
     {
       $host = $this->config[$this->environment]['api_host'];
       $api_base = $this->config[$this->environment]['api_base'];
       $endpoint = 'auth/saml';
-      return "${host}${api_base}${endpoint}";
+      
+      return "${host}${api_base}${endpoint}/${user_id}?session=${sso_session}";
     }
     
     

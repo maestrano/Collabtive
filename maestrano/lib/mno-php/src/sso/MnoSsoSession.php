@@ -78,7 +78,7 @@ class MnoSsoSession
     */
     public function sessionCheckUrl()
     {
-      $url = $this->settings->getSsoSessionCheckUrl() . '/' . $this->uid . '?session=' . $this->token;
+      $url = $this->settings->getSsoSessionCheckUrl($this->uid,$this->token);
       return $url;
     }
     
