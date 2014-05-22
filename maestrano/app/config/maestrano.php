@@ -1,5 +1,5 @@
 <?php
-$mno_settings = MnoSettings::getInstance();
+$mno_settings = Maestrano::getInstance()->getSettings();
 
 // Set environment
 // 'test' or 'production'

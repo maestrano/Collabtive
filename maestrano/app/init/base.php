@@ -7,8 +7,17 @@ if (!defined('MAESTRANO_ROOT')) {
 }
 
 //-----------------------------------------------
-// Load Libraries & Settings
+// Require Maestrano library
 //-----------------------------------------------
-require MAESTRANO_ROOT . '/app/init/_lib_loader.php';
-require MAESTRANO_ROOT . '/app/init/_config_loader.php'; //configure MaestranoService
+require_once MAESTRANO_ROOT . '/lib/maestrano-php/lib/Maestrano.php';
+
+//-----------------------------------------------
+// Require Application Related Files
+//-----------------------------------------------
+define('MNO_APP_DIR', MAESTRANO_ROOT . '/app/');
+require MNO_APP_DIR . '/sso/MnoSsoUser.php';
+require MNO_APP_DIR . '/sso/MnoSsoGroup.php';
+
+// Require Config files
+require MAESTRANO_ROOT . '/app/config/maestrano.php';
   

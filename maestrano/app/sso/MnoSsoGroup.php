@@ -13,7 +13,7 @@
  *  -> country: (user) country in alpha2 format
  *  -> company_name: (user) company name (not a mandatory field - might be blank)
  */
-class MnoSsoGroup extends MnoSsoBaseGroup
+class MnoSsoGroup extends Maestrano_Sso_BaseGroup
 {
   /**
    * Database connection
@@ -24,11 +24,11 @@ class MnoSsoGroup extends MnoSsoBaseGroup
   /**
    * Extend constructor to inialize app specific objects
    *
-   * @param OneLogin_Saml_Response $saml_response
+   * @param Maestrano_Saml_Response $saml_response
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public function __construct(OneLogin_Saml_Response $saml_response, $opts = array())
+  public function __construct(Maestrano_Saml_Response $saml_response, $opts = array())
   {
     // Call Parent
     parent::__construct($saml_response);

@@ -13,7 +13,7 @@
  *
  * User identification:
  * --------------------
- * You should set MnoSettings#user_creation_mode to 'real' or 'virtual'
+ * You should set Maestrano_Settings#user_creation_mode to 'real' or 'virtual'
  * depending on whether your users can be part of multiple groups or not
  * and then use the getUid() and getEmail() methods.
  * Use the attributes below only if you know what you're doing
@@ -30,7 +30,7 @@
  *  -> country: user country in alpha2 format
  *  -> company_name: user company name (not a mandatory field - might be blank)
  */
-class MnoSsoUser extends MnoSsoBaseUser
+class MnoSsoUser extends Maestrano_Sso_BaseUser
 {
   /**
    * Database connection
@@ -54,11 +54,11 @@ class MnoSsoUser extends MnoSsoBaseUser
   /**
    * Extend constructor to inialize app specific objects
    *
-   * @param OneLogin_Saml_Response $saml_response
+   * @param Maestrano_Saml_Response $saml_response
    *   A SamlResponse object from Maestrano containing details
    *   about the user being authenticated
    */
-  public function __construct(OneLogin_Saml_Response $saml_response, $opts = array())
+  public function __construct(Maestrano_Saml_Response $saml_response, $opts = array())
   {
     // Call Parent
     parent::__construct($saml_response);

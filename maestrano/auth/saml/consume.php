@@ -34,7 +34,7 @@ if(isset($previous_url)) {
 }
 
 // Get Maestrano Service
-$maestrano = MaestranoService::getInstance();
+$maestrano = Maestrano::getInstance();
 
 // Options variable
 if (!isset($opts)) {
@@ -42,7 +42,7 @@ if (!isset($opts)) {
 }
 
 // Build SAML response
-$samlResponse = new OneLogin_Saml_Response($maestrano->getSettings()->getSamlSettings(), $_POST['SAMLResponse']);
+$samlResponse = new Maestrano_Saml_Response($maestrano->getSettings()->getSamlSettings(), $_POST['SAMLResponse']);
 
 try {
     if ($samlResponse->isValid()) {
