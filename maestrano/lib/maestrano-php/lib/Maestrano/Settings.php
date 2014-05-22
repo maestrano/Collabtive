@@ -34,7 +34,7 @@ class Maestrano_Settings
      * Maestrano or API Sandbox
      * @var string
      */
-    public $api_token = 'some_long_token';
+    public $api_key = 'some_long_token';
     
     /**
      * The host for this application
@@ -163,6 +163,15 @@ class Maestrano_Settings
     }
     
     /**
+     * Return the API Host
+     */
+    public function getApiHost()
+    {
+      $host = $this->config[$this->environment]['api_host'];
+      return $host;
+    }
+    
+    /**
      * Returns an instance of this class
      * (this class uses the singleton pattern)
      *
@@ -188,7 +197,7 @@ class Maestrano_Settings
       $settings->idpSingleSignOnUrl = $this->getSsoIdpUrl();
       $settings->idpPublicCertificate = $this->getSsoX509Certificate();
       $settings->spReturnUrl = $this->getAppSsoConsumeUrl();
-      $settings->spIssuer = $this->api_token;
+      $settings->spIssuer = $this->api_key;
       $settings->requestedNameIdFormat = $this->getSsoNameIdFormat();
       
       return $settings;

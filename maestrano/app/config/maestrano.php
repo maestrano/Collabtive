@@ -28,7 +28,7 @@ if ($mno_settings->environment == 'production') {
   $mno_settings->app_host = "https://myservice.com";
 
   // API Token (obtained on maestrano.com)
-  $mno_settings->api_token = 'production_token_from_maestrano';
+  $mno_settings->api_key = 'production_token_from_maestrano';
 
   // SSO initialization URL
   $mno_settings->sso_app_init_path = '/maestrano/auth/saml/index.php';
@@ -44,7 +44,7 @@ if ($mno_settings->environment == 'production') {
   $mno_settings->app_host = "http://localhost:8888";
 
   // API Token (obtained on api-sandbox.maestrano.io)
-  $mno_settings->api_token = 'gfcmbu8269wyi0hjazk4t7o1sndpvrqxl53e1';
+  $mno_settings->api_key = 'gfcmbu8269wyi0hjazk4t7o1sndpvrqxl53e1';
 
   // SSO initialization URL
   $mno_settings->sso_app_init_path = '/maestrano/auth/saml/index.php';

@@ -8,6 +8,18 @@
 class Maestrano
 {
   
+  /**
+   * @var string|null The version of the Maestrano API to use for requests.
+   */
+  public static $apiVersion = null;
+  
+  /**
+   * @var boolean Defaults to false.
+   */
+  public static $verifySslCerts = false;
+  
+  const VERSION = '0.1';
+  
   protected static $_instance;
   protected $after_sso_sign_in_path = '/';
   protected $settings;
@@ -36,7 +48,22 @@ class Maestrano
         return self::$_instance;
     }
   
-  
+   /**
+    * Return the Maestrano API Key
+    */
+    public function getApiKey() {
+      $settings = $this->getSettings();
+      return $settings->api_key;
+    }
+    
+    /**
+     * Return the Maestrano API Key
+     */
+     public function getApiHost() {
+       $settings = $this->getSettings();
+       return $settings->getApiHost();
+     }
+   
    /**
     * Return the maestrano settings
     *
@@ -159,11 +186,11 @@ class Maestrano
     {
       $api_url = $this->settings->getApiUrl();
       $endpoint = 'ping';
-      $api_token = $this->settings->api_token;
+      $api_key = $this->settings->api_key;
       
       // Build request
       // $req = new HttpRequest("${api_url}${endpoint}", HttpRequest::METH_GET);
-      // $req->setBasicAuth($api_token, "");
+      // $req->setBasicAuth($api_key, "");
       // 
       // // Get response
       // $response = $req->send();
