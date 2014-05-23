@@ -180,7 +180,7 @@ class Maestrano_Api_Requestor
                 'uname' => $uname);
     $headers = array('X-Maestrano-Client-User-Agent: ' . json_encode($ua),
                      'User-Agent: Maestrano/v1 PhpBindings/' . Maestrano::VERSION,
-                     'Authorization: Bearer ' . $myApiKey);
+                     'Authorization: Basic ' . base64_encode($myApiKey . ':'));
     if (Maestrano::$apiVersion)
       $headers[] = 'Maestrano-Version: ' . Maestrano::$apiVersion;
     list($rbody, $rcode) = $this->_curlRequest(

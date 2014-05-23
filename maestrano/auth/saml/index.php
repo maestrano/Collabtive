@@ -17,9 +17,6 @@ require MAESTRANO_ROOT . '/app/init/auth_controllers.php';
 // Get Maestrano Service
 $maestrano = Maestrano::getInstance();
 
-//var_dump($maestrano->ping());
-Maestrano_Billing_Bill::all();
-
 // Build SAML request and Redirect to IDP
 $authRequest = new Maestrano_Saml_AuthRequest($maestrano->getSettings()->getSamlSettings());
 $url = $authRequest->getRedirectUrl();

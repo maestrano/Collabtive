@@ -43,8 +43,7 @@ require_once(dirname(__FILE__) . '/Maestrano/Api/InvalidRequestError.php');
 require_once(dirname(__FILE__) . '/Maestrano/Api/Requestor.php');
 require_once(dirname(__FILE__) . '/Maestrano/Api/Util.php');
 require_once(dirname(__FILE__) . '/Maestrano/Api/AuthenticationError.php');
-
 require_once(dirname(__FILE__) . '/Maestrano/Api/Resource.php');
 
-// Billing
-require_once(dirname(__FILE__) . '/Maestrano/Billing/Bill.php');
+// Account API
+require_once(dirname(__FILE__) . '/Maestrano/Account/Bill.php');

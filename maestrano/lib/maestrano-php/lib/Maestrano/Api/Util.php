@@ -56,7 +56,7 @@ abstract class Maestrano_Api_Util
   public static function convertToMaestranoObject($resp, $apiKey)
   {
     $types = array(
-      'bill' => 'Maestrano_Billing_Bill',
+      'account_bill' => 'Maestrano_Account_Bill',
     );
     if (self::isList($resp)) {
       $mapped = array();
