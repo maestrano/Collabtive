@@ -3,7 +3,7 @@
 /**
  * Create a SAML authorization request.
  */
-class Maestrano_Saml_AuthRequest
+class Maestrano_Saml_Request
 {
     const ID_PREFIX = 'Maestrano';
 

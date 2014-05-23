@@ -66,18 +66,18 @@ class Maestrano_Sso_Service
   * Return a new saml request object
   *
   * @param Array of GET parameters (optional)
-  * @return Maestrano_Saml_AuthRequest instance
+  * @return Maestrano_Saml_Request instance
   */
   public function buildRequest($get_params = array())
   {
-    return new Maestrano_Saml_AuthRequest($get_params);
+    return new Maestrano_Saml_Request($get_params);
   }
   
   /**
   * Return a new saml response object
   *
   * @param String saml_response
-  * @return Maestrano_Saml_AuthRequest instance
+  * @return Maestrano_Saml_Request instance
   */
   public function buildResponse($saml_response)
   {
