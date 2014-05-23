@@ -13,9 +13,8 @@ if (!function_exists('mb_detect_encoding')) {
   throw new Exception('Maestrano needs the Multibyte String PHP extension.');
 }
 
-// Maestrano Base files
+// Maestrano wrapper
 require_once(dirname(__FILE__) . '/Maestrano/Maestrano.php');
-require_once(dirname(__FILE__) . '/Maestrano/Settings.php');
 
 // XMLSEC Libs
 require_once(dirname(__FILE__) . '/Maestrano/Xmlseclibs/xmlseclibs.php');
