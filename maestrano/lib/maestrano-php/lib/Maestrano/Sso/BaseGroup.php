@@ -32,7 +32,7 @@ class Maestrano_Sso_BaseGroup
   {
       // Get assertion attributes and session
       $assert_attrs = $saml_response->getAttributes();
-      $this->session = Maestrano::getClientSession();
+      $this->session = Maestrano::sso()->getHttpSession();
       
       // Extract session information
       $this->uid = $assert_attrs['group_uid'][0];

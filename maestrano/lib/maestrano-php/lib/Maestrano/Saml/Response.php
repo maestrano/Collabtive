@@ -25,13 +25,12 @@ class Maestrano_Saml_Response
     /**
      * Construct the response object.
      *
-     * @param Maestrano_Saml_Settings $settings Settings containing the necessary X.509 certificate to decode the XML.
-     * @param string $assertion A UUEncoded SAML assertion from the IdP.
+     * @param string $saml_response A UUEncoded SAML response from the IdP.
      */
-    public function __construct(Maestrano_Saml_Settings $settings, $assertion)
+    public function __construct($saml_response)
     {
-        $this->_settings = $settings;
-        $this->assertion = base64_decode($assertion);
+        $this->_settings = Maestrano::sso()->getSamlSettings();
+        $this->assertion = base64_decode($saml_response);
         $this->document = new DOMDocument();
         $this->document->loadXML($this->assertion);
     }

@@ -1,16 +1,22 @@
 <?php
 //-----------------------------------------------
-// Load Maestrano
+// Paths
 //-----------------------------------------------
 if (!defined('MAESTRANO_ROOT')) {
   define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
 }
+define('APP_ROOT', realpath(MAESTRANO_ROOT . '/../'));
+
+
+//-----------------------------------------------
+// Load and configure Maestrano
+//-----------------------------------------------
 require MAESTRANO_ROOT . '/app/initializers/maestrano.php';
 
 //-----------------------------------------------
 // Custom dependency loading
 //-----------------------------------------------
-define('APP_ROOT', realpath(MAESTRANO_ROOT . '/../'));
+define('CL_ROOT', APP_ROOT);
 require APP_ROOT . '/include/initfunctions.php';
 require APP_ROOT . '/include/class.mylog.php';
 require APP_ROOT . '/include/class.user.php';

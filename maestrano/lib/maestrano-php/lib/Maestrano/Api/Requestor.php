@@ -26,7 +26,7 @@ class Maestrano_Api_Requestor
    */
   public static function apiUrl($url='')
   {
-    $apiBase = Maestrano::getApiHost();
+    $apiBase = Maestrano::param('api_host');
     return "$apiBase$url";
   }
 
@@ -162,7 +162,7 @@ class Maestrano_Api_Requestor
   {
     $myApiKey = $this->_apiKey;
     if (!$myApiKey)
-      $myApiKey = Maestrano::getApiKey();
+      $myApiKey = Maestrano::param('api_key');
 
     if (!$myApiKey) {
       $msg = 'No API key provided.';
@@ -181,8 +181,8 @@ class Maestrano_Api_Requestor
     $headers = array('X-Maestrano-Client-User-Agent: ' . json_encode($ua),
                      'User-Agent: Maestrano/v1 PhpBindings/' . Maestrano::VERSION,
                      'Authorization: Basic ' . base64_encode($myApiKey . ':'));
-    if (Maestrano::$apiVersion)
-      $headers[] = 'Maestrano-Version: ' . Maestrano::$apiVersion;
+    if (Maestrano::param('api_version'))
+      $headers[] = 'Maestrano-Version: ' . Maestrano::param('api_version');
     list($rbody, $rcode) = $this->_curlRequest(
         $method,
         $absUrl,
@@ -244,7 +244,7 @@ class Maestrano_Api_Requestor
     $opts[CURLOPT_TIMEOUT] = 80;
     $opts[CURLOPT_RETURNTRANSFER] = true;
     $opts[CURLOPT_HTTPHEADER] = $headers;
-    if (!Maestrano::$verifySslCerts)
+    if (!Maestrano::param('verify_ssl_certs'))
       $opts[CURLOPT_SSL_VERIFYPEER] = false;
 
     curl_setopt_array($curl, $opts);
@@ -287,7 +287,7 @@ class Maestrano_Api_Requestor
    */
   public function handleCurlError($errno, $message)
   {
-    $apiBase = Maestrano::getApiHost();
+    $apiBase = Maestrano::param('api_host');
     switch ($errno) {
     case CURLE_COULDNT_CONNECT:
     case CURLE_COULDNT_RESOLVE_HOST:

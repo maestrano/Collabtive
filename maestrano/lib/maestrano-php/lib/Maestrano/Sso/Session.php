@@ -32,7 +32,7 @@ class Maestrano_Sso_Session
   public function __construct()
   {
       // Populate attributes from params
-      $this->session = &Maestrano::getClientSession();
+      $this->session = &Maestrano::sso()->getHttpSession();
       $this->uid = $this->session['mno_uid'];
       $this->token = $this->session['mno_session'];
       $this->recheck = new DateTime($this->session['mno_session_recheck']);
@@ -61,9 +61,9 @@ class Maestrano_Sso_Session
     *
     * @return string the endpoint url
     */
-    public function sessionCheckUrl()
+    public function getSessionCheckUrl()
     {
-      $url = Maestrano::getSsoSessionCheckUrl($this->uid,$this->token);
+      $url = Maestrano::sso()->getSessionCheckUrl($this->uid,$this->token);
       return $url;
     }
     
@@ -83,7 +83,7 @@ class Maestrano_Sso_Session
      * @return boolean the validity of the session
      */
      public function performRemoteCheck() {
-       $json = $this->fetchUrl($this->sessionCheckUrl());
+       $json = $this->fetchUrl($this->getSessionCheckUrl());
        if ($json) {
         $response = json_decode($json,true);
         

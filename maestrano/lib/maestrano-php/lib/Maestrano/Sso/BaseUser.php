@@ -66,7 +66,7 @@ class Maestrano_Sso_BaseUser
       $this->group_role = $assert_attrs['group_role'][0];
       
       // Extract session information
-      $this->session = &Maestrano::getClientSession(); #reference
+      $this->session = &Maestrano::sso()->getHttpSession(); #reference
       $this->sso_session = $assert_attrs['mno_session'][0];
       $this->sso_session_recheck = new DateTime($assert_attrs['mno_session_recheck'][0]);
       
@@ -87,7 +87,7 @@ class Maestrano_Sso_BaseUser
    * 'virtual': return a composite maestrano uid (set this if users can only be part of one group)
    */
   public function getUid() {
-    if (Maestrano::getUserCreationMode() == 'real') {
+    if (Maestrano::param('user_creation_mode') == 'real') {
       return $this->uid;
     } else {
       return $this->virtual_uid;
@@ -100,7 +100,7 @@ class Maestrano_Sso_BaseUser
    * 'virtual': return a composite maestrano email (set this if users can only be part of one group)
    */
   public function getEmail() {
-    if (Maestrano::getUserCreationMode() == 'real') {
+    if (Maestrano::param('user_creation_mode') == 'real') {
       return $this->email;
     } else {
       return $this->virtual_email;

@@ -8,21 +8,26 @@ class Maestrano_Saml_AuthRequest
     const ID_PREFIX = 'Maestrano';
 
     /**
-     * A SamlResponse class provided to the constructor.
+     * A settings objects
      * @var Maestrano_Saml_Settings
      */
     protected $_settings;
+    
+    /**
+     * GET parameters passed during
+     * @var Array
+     */
+    protected $_get_params;
 
     /**
-     * Construct the response object.
+     * Construct the Request object.
      *
-     * @param Maestrano_Saml_Settings $settings
-     *   A SamlResponse settings object containing the necessary
-     *   x509 certicate to decode the XML.
+     * @param $get_params the GET parameters associative array
      */
-    public function __construct(Maestrano_Saml_Settings $settings)
+    public function __construct($get_params = array())
     {
-        $this->_settings = $settings;
+        $this->_settings = Maestrano::sso()->getSamlSettings();
+        $this->_get_params = $get_params;
     }
 
     /**
@@ -32,6 +37,8 @@ class Maestrano_Saml_AuthRequest
      */
     public function getRedirectUrl()
     {
+
+        // Build the request
         $id = $this->_generateUniqueID();
         $issueInstant = $this->_getTimestamp();
 
@@ -53,12 +60,21 @@ class Maestrano_Saml_AuthRequest
     </samlp:RequestedAuthnContext>
 </samlp:AuthnRequest>
 AUTHNREQUEST;
-
+        
+        // Encode the request
         $deflatedRequest = gzdeflate($request);
         $base64Request = base64_encode($deflatedRequest);
         $encodedRequest = urlencode($base64Request);
-
-        return $this->_settings->idpSingleSignOnUrl . "?SAMLRequest=" . $encodedRequest;
+        
+        // Build redirect URL
+        $url = $this->_settings->idpSingleSignOnUrl . "?SAMLRequest=" . $encodedRequest;
+        
+        // Keep the original GET parameters
+        foreach ($this->_get_params as $param => $value) {
+          $url .= "&" . $param . "=" . urlencode($value);
+        }
+        
+        return $url;
     }
 
     protected function _generateUniqueID()

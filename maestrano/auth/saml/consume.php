@@ -12,11 +12,7 @@
 //-----------------------------------------------
 // Define root folder
 //-----------------------------------------------
-define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../../'));
-
-error_reporting(E_ALL);
-
-require MAESTRANO_ROOT . '/app/initializers/auth_controllers.php';
+require dirname(__FILE__) . '/../../app/initializers/auth_controllers.php';
 
 // Destroy session completely to avoid garbage (undeclared classes)
 // but keep previous url if defined
@@ -39,7 +35,7 @@ if (!isset($opts)) {
 }
 
 // Build SAML response
-$samlResponse = new Maestrano_Saml_Response(Maestrano::getSamlSettings(), $_POST['SAMLResponse']);
+$samlResponse = Maestrano::sso()->buildResponse($_POST['SAMLResponse']);
 
 try {
     if ($samlResponse->isValid()) {
@@ -76,9 +72,9 @@ try {
         // Refuse access otherwise
         if ($sso_user->isMatched() && $sso_group->isMatched() && $user_group_linked) {
           $sso_user->signIn();
-          header("Location: " . Maestrano::getAfterSsoSignInPath());
+          header("Location: " . Maestrano::sso()->getAfterSignInPath());
         } else {
-          header("Location: " . Maestrano::getSsoUnauthorizedUrl());
+          header("Location: " . Maestrano::sso()->getUnauthorizedUrl());
         }
     }
     else {
