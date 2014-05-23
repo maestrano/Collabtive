@@ -26,7 +26,7 @@ if (!empty($db_name) and !empty($db_user)) {
 
 // Hook:Maestrano
 // Load Maestrano
-require CL_ROOT . '/maestrano/app/init/maestrano.php';
+require CL_ROOT . '/maestrano/app/initializers/maestrano.php';
 
 // Start template engine
 $template = new Smarty();
@@ -67,16 +67,16 @@ if (isset($_SESSION["userid"])) {
     
     // Hook:Maestrano
     // Check Maestrano session is still valid
-    if (Maestrano::isSsoEnabled()) {
-      if (!Maestrano::getSsoSession()->isValid()) {
-        header("Location: " . Maestrano::getSsoInitUrl());
+    if (Maestrano::sso()->isSsoEnabled()) {
+      if (!Maestrano::sso()->session()->isValid()) {
+        header("Location: " . Maestrano::sso()->getInitUrl());
       }
     }
 } else {
     // Hook:Maestrano
     // Redirect to SSO login
-    if (Maestrano::isSsoEnabled()) {
-      header("Location: " . Maestrano::getSsoInitUrl());
+    if (Maestrano::sso()->isSsoEnabled()) {
+      header("Location: " . Maestrano::sso()->getInitUrl());
     }
     
     // Flag user as not logged in
