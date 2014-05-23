@@ -20,10 +20,10 @@ require_once(dirname(__FILE__) . '/Maestrano/Maestrano.php');
 require_once(dirname(__FILE__) . '/Maestrano/Xmlseclibs/xmlseclibs.php');
 
 // SAML
-require_once(dirname(__FILE__) . '/Maestrano/Saml/AuthRequest.php');
-require_once(dirname(__FILE__) . '/Maestrano/Saml/Response.php');
-require_once(dirname(__FILE__) . '/Maestrano/Saml/Settings.php');
 require_once(dirname(__FILE__) . '/Maestrano/Saml/XmlSec.php');
+require_once(dirname(__FILE__) . '/Maestrano/Saml/Settings.php');
+require_once(dirname(__FILE__) . '/Maestrano/Saml/Request.php');
+require_once(dirname(__FILE__) . '/Maestrano/Saml/Response.php');
 
 // Util
 require_once(dirname(__FILE__) . '/Maestrano/Util/Set.php');
