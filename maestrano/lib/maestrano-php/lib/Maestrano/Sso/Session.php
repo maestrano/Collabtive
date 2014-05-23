@@ -7,11 +7,6 @@
 class Maestrano_Sso_Session
 {
   /**
-   * Maestrano Settings object
-   */
-  public $settings = null;
-  
-  /**
    * Session object
    */
   public $session = null;
@@ -33,21 +28,11 @@ class Maestrano_Sso_Session
   
   /**
    * Construct the Maestrano_Sso_Session object
-   *
-   * @param Maestrano_Settings $mno_settings
-   *   A Maestrano Settings object
-   * @param Array $session
-   *   A session object, usually $_SESSION
-   *
    */
   public function __construct()
-  {   
-      // Get Maestrano service
-      $mno_service = Maestrano::getInstance();
-      
+  {
       // Populate attributes from params
-      $this->settings = Maestrano_Settings::getInstance();
-      $this->session = $mno_service->getClientSession();
+      $this->session = &Maestrano::getClientSession();
       $this->uid = $this->session['mno_uid'];
       $this->token = $this->session['mno_session'];
       $this->recheck = new DateTime($this->session['mno_session_recheck']);
@@ -78,7 +63,7 @@ class Maestrano_Sso_Session
     */
     public function sessionCheckUrl()
     {
-      $url = $this->settings->getSsoSessionCheckUrl($this->uid,$this->token);
+      $url = Maestrano::getSsoSessionCheckUrl($this->uid,$this->token);
       return $url;
     }
     

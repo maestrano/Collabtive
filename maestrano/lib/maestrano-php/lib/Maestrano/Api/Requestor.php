@@ -26,7 +26,7 @@ class Maestrano_Api_Requestor
    */
   public static function apiUrl($url='')
   {
-    $apiBase = Maestrano::getInstance()->getApiHost();
+    $apiBase = Maestrano::getApiHost();
     return "$apiBase$url";
   }
 
@@ -162,7 +162,7 @@ class Maestrano_Api_Requestor
   {
     $myApiKey = $this->_apiKey;
     if (!$myApiKey)
-      $myApiKey = Maestrano::getInstance()->getApiKey();
+      $myApiKey = Maestrano::getApiKey();
 
     if (!$myApiKey) {
       $msg = 'No API key provided.';
@@ -287,7 +287,7 @@ class Maestrano_Api_Requestor
    */
   public function handleCurlError($errno, $message)
   {
-    $apiBase = Maestrano::getInstance()->getApiHost();
+    $apiBase = Maestrano::getApiHost();
     switch ($errno) {
     case CURLE_COULDNT_CONNECT:
     case CURLE_COULDNT_RESOLVE_HOST:

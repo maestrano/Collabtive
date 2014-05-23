@@ -33,16 +33,13 @@ if(isset($previous_url)) {
 	$_SESSION['mno_previous_url'] = $previous_url;
 }
 
-// Get Maestrano Service
-$maestrano = Maestrano::getInstance();
-
 // Options variable
 if (!isset($opts)) {
   $opts = array();
 }
 
 // Build SAML response
-$samlResponse = new Maestrano_Saml_Response($maestrano->getSettings()->getSamlSettings(), $_POST['SAMLResponse']);
+$samlResponse = new Maestrano_Saml_Response(Maestrano::getSamlSettings(), $_POST['SAMLResponse']);
 
 try {
     if ($samlResponse->isValid()) {
@@ -79,9 +76,9 @@ try {
         // Refuse access otherwise
         if ($sso_user->isMatched() && $sso_group->isMatched() && $user_group_linked) {
           $sso_user->signIn();
-          header("Location: " . $maestrano->getAfterSsoSignInPath());
+          header("Location: " . Maestrano::getAfterSsoSignInPath());
         } else {
-          header("Location: " . $maestrano->getSsoUnauthorizedUrl());
+          header("Location: " . Maestrano::getSsoUnauthorizedUrl());
         }
     }
     else {

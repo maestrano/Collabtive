@@ -30,10 +30,9 @@ class Maestrano_Sso_BaseGroup
    */
   public function __construct(Maestrano_Saml_Response $saml_response)
   {
-      // Get maestrano service, assertion attributes and session
-      $mno_service = Maestrano::getInstance();
+      // Get assertion attributes and session
       $assert_attrs = $saml_response->getAttributes();
-      $this->session = $mno_service->getClientSession();
+      $this->session = Maestrano::getClientSession();
       
       // Extract session information
       $this->uid = $assert_attrs['group_uid'][0];

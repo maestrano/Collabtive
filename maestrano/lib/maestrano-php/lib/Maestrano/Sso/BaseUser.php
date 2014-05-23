@@ -6,9 +6,6 @@
  */
 class Maestrano_Sso_BaseUser
 {
-  /* Settings Object */
-  public $settings;
-  
   /* Session Object */
   public $session = null;
   
@@ -45,34 +42,6 @@ class Maestrano_Sso_BaseUser
   /* When to recheck for validity of the sso session */
   public $sso_session_recheck = null;
   
-  /* Is user owner of the app */
-  public $app_owner = false;
-  
-  /**
-   * An associative array containing the Maestrano 
-   * organizations using this app and to which the
-   * user belongs.
-   * Keys are the maestrano organization uid.
-   * Values are an associative array containing the
-   * name of the organization as well as the role 
-   * of the user within that organization.
-   * ---
-   * List of Organization Roles
-   * - Member
-   * - Power User
-   * - Admin
-   * - Super Admin
-   * ---
-   * e.g:
-   * { 'org-876' => {
-   *      'name' => 'SomeOrga',
-   *      'role' => 'Super Admin'
-   *   }
-   * }
-   * @var array
-   */
-  public $organizations = array();
-  
   /**
    * User Local Id
    * @var string
@@ -89,9 +58,7 @@ class Maestrano_Sso_BaseUser
    */
   public function __construct(Maestrano_Saml_Response $saml_response)
   {
-      // Get maestrano service, assertion attributes and session
-      $mno_service = Maestrano::getInstance();
-      $this->settings = Maestrano_Settings::getInstance();
+      // Get assertion attributes
       $assert_attrs = $saml_response->getAttributes();
       
       // Group related information
@@ -99,7 +66,7 @@ class Maestrano_Sso_BaseUser
       $this->group_role = $assert_attrs['group_role'][0];
       
       // Extract session information
-      $this->session = &$mno_service->getClientSession(); #reference
+      $this->session = &Maestrano::getClientSession(); #reference
       $this->sso_session = $assert_attrs['mno_session'][0];
       $this->sso_session_recheck = new DateTime($assert_attrs['mno_session_recheck'][0]);
       
@@ -112,19 +79,15 @@ class Maestrano_Sso_BaseUser
       $this->surname = $assert_attrs['surname'][0];
       $this->country = $assert_attrs['country'][0];
       $this->company_name = $assert_attrs['company_name'][0];
-      
-      // Deprecated
-      $this->app_owner = ($assert_attrs['app_owner'][0] == 'true');
-      $this->organizations = json_decode($assert_attrs['organizations'][0],true);
   }
   
   /* 
-   * Result depends on the Maestrano_Settings#user_creation_mode:
+   * Result depends on Maestranos#user_creation_mode:
    * 'real': return the real maestrano uid (set this if users can be part of multiple groups)
    * 'virtual': return a composite maestrano uid (set this if users can only be part of one group)
    */
   public function getUid() {
-    if ($this->settings->user_creation_mode == 'real') {
+    if (Maestrano::getUserCreationMode() == 'real') {
       return $this->uid;
     } else {
       return $this->virtual_uid;
@@ -132,12 +95,12 @@ class Maestrano_Sso_BaseUser
   }
   
   /* 
-   * Result depends on the Maestrano_Settings#user_creation_mode:
+   * Result depends on Maestranos#user_creation_mode:
    * 'real': return the real maestrano email (set this if users can be part of multiple groups)
    * 'virtual': return a composite maestrano email (set this if users can only be part of one group)
    */
   public function getEmail() {
-    if ($this->settings->user_creation_mode == 'real') {
+    if (Maestrano::getUserCreationMode() == 'real') {
       return $this->email;
     } else {
       return $this->virtual_email;
@@ -147,12 +110,6 @@ class Maestrano_Sso_BaseUser
   /**
    * Try to find a local application user matching the sso one
    * using uid first, then email address.
-   * If a user is found via email address then setLocalUid
-   * is called to update the local user Maestrano UID
-   * ---
-   * Internally use the following interface methods:
-   *  - getLocalIdByUid
-   *  - setLocalUid
    * 
    * @return local_id if a local user matched, null otherwise
    */

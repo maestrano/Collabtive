@@ -13,7 +13,7 @@
  *
  * User identification:
  * --------------------
- * You should set Maestrano_Settings#user_creation_mode to 'real' or 'virtual'
+ * You should set Maestrano#user_creation_mode to 'real' or 'virtual'
  * depending on whether your users can be part of multiple groups or not
  * and then use the getUid() and getEmail() methods.
  * Use the attributes below only if you know what you're doing
