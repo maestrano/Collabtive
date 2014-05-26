@@ -77,7 +77,7 @@ class Maestrano_Sso_User extends Maestrano_Sso_BaseUser
    *
    * @return boolean whether the user was successfully set in session or not
    */
-  protected function setInSession()
+  protected function setInSession(& $http_session)
   {
     // First set $conn variable (used internally by collabtive methods)
     $conn = $this->connection;
@@ -88,12 +88,12 @@ class Maestrano_Sso_User extends Maestrano_Sso_BaseUser
         $now = time();
         
         // Set session
-        $this->session['userid'] = $chk['ID'];
-        $this->session['username'] = stripslashes($chk['name']);
-        $this->session['lastlogin'] = $now;
-        $this->session['userlocale'] = $chk['locale'];
-        $this->session['usergender'] = $chk['gender'];
-        $this->session["userpermissions"] = $this->_roles->getUserRole($chk["ID"]);
+        $http_session['userid'] = $chk['ID'];
+        $http_session['username'] = stripslashes($chk['name']);
+        $http_session['lastlogin'] = $now;
+        $http_session['userlocale'] = $chk['locale'];
+        $http_session['usergender'] = $chk['gender'];
+        $http_session["userpermissions"] = $this->_roles->getUserRole($chk["ID"]);
         
         // Update last login timestamp
         $upd1 = $conn->query("UPDATE user SET lastlogin = '$now' WHERE ID = $this->local_id");

@@ -68,7 +68,7 @@ if (isset($_SESSION["userid"])) {
     // Hook:Maestrano
     // Check Maestrano session is still valid
     if (Maestrano::sso()->isSsoEnabled()) {
-      if (!Maestrano::sso()->session()->isValid()) {
+      if (!Maestrano::sso()->session($_SESSION)->isValid()) {
         header("Location: " . Maestrano::sso()->getInitUrl());
       }
     }
