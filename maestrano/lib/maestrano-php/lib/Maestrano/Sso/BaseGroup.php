@@ -13,7 +13,7 @@ class Maestrano_Sso_BaseGroup
   public $free_trial_end_at = '';
   
   /* Company Name */
-  public $company_display_name = '';
+  public $company_name = '';
   
   /* Country - alpha2 format */
   public $country = '';
@@ -32,9 +32,8 @@ class Maestrano_Sso_BaseGroup
   {
       // Get assertion attributes and session
       $assert_attrs = $saml_response->getAttributes();
-      $this->session = Maestrano::sso()->getHttpSession();
       
-      // Extract session information
+      // Extract group information
       $this->uid = $assert_attrs['group_uid'][0];
       $this->free_trial_end_at = new DateTime($assert_attrs['group_end_free_trial'][0]);
       $this->country = $assert_attrs['country'][0];

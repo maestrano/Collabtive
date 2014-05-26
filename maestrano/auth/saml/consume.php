@@ -14,25 +14,17 @@
 //-----------------------------------------------
 require dirname(__FILE__) . '/../../app/initializers/auth_controllers.php';
 
-// Destroy session completely to avoid garbage (undeclared classes)
-// but keep previous url if defined
-session_start();
-if(isset($_SESSION['mno_previous_url'])) {
-	$previous_url = $_SESSION['mno_previous_url'];
-}
-session_unset();
-session_destroy();
-
-// Restart session and inject previous url if defined
-session_start();
-if(isset($previous_url)) {
-	$_SESSION['mno_previous_url'] = $previous_url;
-}
-
 // Options variable
 if (!isset($opts)) {
   $opts = array();
 }
+
+// Destroy session completely to avoid garbage (undeclared classes)
+// but keep previous url if defined
+session_start();
+session_unset();
+session_destroy();
+session_start();
 
 // Build SAML response
 $samlResponse = Maestrano::sso()->buildResponse($_POST['SAMLResponse']);
@@ -71,7 +63,7 @@ try {
         // If user is matched then sign it in
         // Refuse access otherwise
         if ($sso_user->isMatched() && $sso_group->isMatched() && $user_group_linked) {
-          $sso_user->signIn();
+          $sso_user->signIn($_SESSION);
           header("Location: " . Maestrano::sso()->getAfterSignInPath());
         } else {
           header("Location: " . Maestrano::sso()->getUnauthorizedUrl());
