@@ -10,8 +10,16 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License v3 or later
  * @global $mylog
  */
+
+if (!defined('MAESTRANO_ROOT')) {
+  define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../maestrano'));
+}
+
+require_once MAESTRANO_ROOT . '/app/init/base.php';
+
 class milestone {
     private $mylog;
+    public $push_to_maestrano = true;
 
     /**
      * Constructor
@@ -32,19 +40,23 @@ class milestone {
      * @param int $status Status (0 = finished, 1 = open)
      * @return bool
      */
-    function add($project, $name, $desc, $start, $end, $status = 1)
+    function add($project, $name, $desc, $start, $end, $status = 1, $mno_status=null)
     {
         global $conn;
         // Convert end date to timestamp
         $end = strtotime($end);
         $start = strtotime($start);
 
-        $insStmt = $conn->prepare("INSERT INTO milestones (`project`,`name`,`desc`,`start`,`end`,`status`) VALUES (?, ?, ?, ?, ?, ?)");
-        $ins = $insStmt->execute(array((int) $project, $name, $desc, $start, $end, (int) $status));
+        $insStmt = $conn->prepare("INSERT INTO milestones (`project`,`name`,`desc`,`start`,`end`,`status`,`mno_status`) VALUES (?, ?, ?, ?, ?, ?,?)");
+        $ins = $insStmt->execute(array((int) $project, $name, $desc, $start, $end, (int) $status, $mno_status));
 
         if ($ins) {
             $insid = $conn->lastInsertId();
             $this->mylog->add($name, 'milestone' , 1, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return $insid;
         } else {
             return false;
@@ -60,21 +72,43 @@ class milestone {
      * @param string $end Day it is due
      * @return bool
      */
-    function edit($id, $name, $desc, $start, $end)
+    function edit($id, $name, $desc, $start, $end, $status=null, $project=null, $mno_status=null)
     {
         global $conn;
         $id = (int) $id;
         $start = strtotime($start);
         $end = strtotime($end);
-
-        $updStmt = $conn->prepare("UPDATE milestones SET `name`=?, `desc`=?, `start`=?, `end`=? WHERE ID=?");
-        $upd = $updStmt->execute(array($name, $desc, $start, $end, $id));
+        $upd = null;
+        
+        $fields = "`name`=?, `desc`=?, `start`=?, `end`=? ";
+        $values = array($name, $desc, $start, $end);
+        if ($status !== null) {
+            $fields .= "`status`=? ";
+            array_push($values, $status);
+        }
+        if ($project !== null) {
+            $fields .= "`project`=? ";
+            array_push($values, $project);
+        }
+        if ($mno_status !== null) {
+            $fields .= "`mno_status`=? ";
+            array_push($values, $mno_status);
+        }
+        array_push($values, $id);
+        
+        $updStmt = $conn->prepare("UPDATE milestones SET ".$fields." WHERE ID=?");
+        $upd = $updStmt->execute($values);
+        
         if ($upd) {
             $nam = $conn->query("SELECT project,name FROM milestones WHERE ID = $id")->fetch();
             $project = $nam[0];
             $name = $nam[1];
 
             $this->mylog->add($name, 'milestone' , 2, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return true;
         } else {
             return false;
@@ -91,16 +125,24 @@ class milestone {
     {
         global $conn;
         $id = (int) $id;
-
+        
         $nam = $conn->query("SELECT project,name FROM milestones WHERE ID = $id");
+        /*
         $del = $conn->query("DELETE FROM milestones WHERE ID = $id");
         $del1 = $conn->query("DELETE FROM milestones_assigned WHERE milestone = $id");
+         */
+        $del = $conn->query("UPDATE milestones SET status=2 WHERE ID = $id");
+        $del1 = $conn->query("UPDATE milestones_assigned SET status=2 WHERE milestone = $id");
         if ($del) {
             $nam = $nam->fetch();
             $project = $nam[0];
             $name = $nam[1];
 
             $this->mylog->add($name, 'milestone', 3, $project);
+            // MNO HOOK
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return true;
         } else {
             return false;
@@ -127,6 +169,10 @@ class milestone {
             $name = $nam[1];
 
             $this->mylog->add($name, 'milestone', 4, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return true;
         } else {
             return false;
@@ -163,6 +209,10 @@ class milestone {
             $name = $nam[1];
 
             $this->mylog->add($name, 'milestone', 5, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return true;
         } else {
             return false;
@@ -179,10 +229,20 @@ class milestone {
     function assign($milestone, $user)
     {
         global $conn;
-        $milestone = (int) $milestone;
-        $user = (int) $user;
-
-        $upd = $conn->query("INSERT INTO milestones_assigned (NULL,$user,$milestone)");
+                
+        if ($user < 1 || $milestone < 1) { return false; }
+        
+        $select_query = $conn->query("SELECT * FROM milestones_assigned WHERE user='$user' and milestone='$milestone'")->fetch();
+        if (!empty($select_query)) {
+            if ($select_query['status'] == '2') {
+                $upd = $conn->prepare("UPDATE milestones_assigned SET status='1' WHERE user=? and milestone=?");
+                $ins = $upd->execute(array((int) $user, (int) $milestone));
+            }
+        } else {
+            $upd = $conn->prepare("INSERT INTO `milestones_assigned` (`user`,`milestone`) VALUES (?,?)");
+            $ins = $upd->execute(array((int) $user, (int) $milestone));
+        }
+        
         if ($upd) {
             $nam = $conn->query("SELECT project,name FROM milestones WHERE ID = $id");
             $nam = $nam->fetch();
@@ -190,6 +250,10 @@ class milestone {
             $name = $nam[1];
 
             $this->mylog->add($name, 'milestone', 6, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return true;
         } else {
             return false;
@@ -209,7 +273,11 @@ class milestone {
         $milestone = (int) $milestone;
         $user = (int) $user;
 
+        /*
         $upd = $conn->query("DELETE FROM milestones_assigned WHERE user = $user AND milestone = $milestone");
+         */
+        $upd = $conn->query("UPDATE milestones_assigned SET status=2 WHERE user = $user AND milestone = $milestone");
+        
         if ($upd) {
             $nam = $conn->query("SELECT project,name FROM milestones WHERE ID = $id");
             $nam = $nam->fetch();
@@ -217,6 +285,10 @@ class milestone {
             $name = $nam[1];
 
             $this->mylog->add($name, 'milestone', 7, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return true;
         } else {
             return false;
@@ -234,7 +306,7 @@ class milestone {
         global $conn;
         $id = (int) $id;
 
-        $sel = $conn->query("SELECT * FROM milestones WHERE ID = $id");
+        $sel = $conn->query("SELECT * FROM milestones WHERE ID = $id and status!=2");
         $milestone = $sel->fetch();
 
         if (!empty($milestone)) {
@@ -249,7 +321,7 @@ class milestone {
             $milestone["name"] = stripslashes($milestone["name"]);
             $milestone["desc"] = stripslashes($milestone["desc"]);
             // Get the name of the project where the message was posted for display
-            $psel = $conn->query("SELECT name FROM projekte WHERE ID = $milestone[project]");
+            $psel = $conn->query("SELECT name FROM projekte WHERE ID = $milestone[project] and status!=2");
             $pname = $psel->fetch();
             $pname = $pname[0];
             $milestone["pname"] = $pname;
@@ -520,7 +592,15 @@ class milestone {
         if ($project > 0) {
             $sel1 = $conn->query("SELECT * FROM milestones WHERE project =  $project AND status=1 AND end = '$starttime' ORDER BY `end` ASC");
         } else {
-            $sel1 = $conn->query("SELECT milestones.*,projekte_assigned.user,projekte.name AS pname FROM milestones,projekte_assigned,projekte WHERE milestones.project = projekte_assigned.projekt AND milestones.project = projekte.ID HAVING projekte_assigned.user = $user AND status=1 AND end = '$starttime'");
+            $sel1 = $conn->query("SELECT milestones.*,projekte_assigned.user,projekte.name AS pname "
+                               . "FROM milestones,projekte_assigned,projekte "
+                               . "WHERE milestones.project = projekte_assigned.projekt "
+                                    . "AND milestones.project = projekte.ID "
+                                    . "AND milestones.status=1 "
+                                    . "AND projekte_assigned.status=1 "
+                                    . "AND projekte.status=1 "
+                               . "HAVING projekte_assigned.user = $user AND "
+                                        . "end = '$starttime'");
         } while ($stone = $sel1->fetch()) {
             $stone["daysleft"] = $this->getDaysLeft($stone["end"]);
             array_push($timeline, $stone);

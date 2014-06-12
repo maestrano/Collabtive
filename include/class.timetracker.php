@@ -240,7 +240,7 @@ class timetracker {
                     $data["tname"] = $tasks;
                 }
 
-                $pname = $conn->query("SELECT name FROM projekte WHERE ID = $data[project]")->fetch();
+                $pname = $conn->query("SELECT name FROM projekte WHERE ID = $data[project] and status!=2")->fetch();
                 $pname = stripslashes($pname[0]);
 
                 $uname = $conn->query("SELECT name FROM user WHERE ID = $data[user]")->fetch();
@@ -339,7 +339,7 @@ class timetracker {
                     $data["tname"] = $tasks;
                 }
 
-                $pname = $conn->query("SELECT name FROM projekte WHERE ID = $data[project]")->fetch();
+                $pname = $conn->query("SELECT name FROM projekte WHERE ID = $data[project] and status!=2")->fetch();
                 $pname = stripslashes($pname[0]);
 
                 $uname = $conn->query("SELECT name FROM user WHERE ID = $data[user]")->fetch();

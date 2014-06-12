@@ -230,7 +230,7 @@ if ($action == "add") {
     }
 	global $conn;
     
-    $pname = $conn->query("SELECT name FROM projekte WHERE ID = $id");
+    $pname = $conn->query("SELECT name FROM projekte WHERE ID = $id and status!=2");
     $pname = $pname->fetchColumn();
 
     $pdf = new MYPDF("P", PDF_UNIT, "A4", true);

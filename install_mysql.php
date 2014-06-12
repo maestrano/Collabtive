@@ -109,6 +109,7 @@
   `ID` int(10) NOT NULL auto_increment,
   `user` int(10) NOT NULL default '0',
   `milestone` int(10) NOT NULL default '0',
+  `status` int(1) NOT NULL default '1',
   PRIMARY KEY  (`ID`),
   KEY `user` (`user`),
   KEY `milestone` (`milestone`)
@@ -130,6 +131,7 @@
   `ID` int(10) NOT NULL auto_increment,
   `user` int(10) NOT NULL default '0',
   `projekt` int(10) NOT NULL default '0',
+  `status` int(1) NOT NULL default '1',
   PRIMARY KEY  (`ID`),
   KEY `user` (`user`),
   KEY `projekt` (`projekt`)
@@ -175,6 +177,7 @@
   `ID` int(10) NOT NULL auto_increment,
   `user` int(10) NOT NULL default '0',
   `task` int(10) NOT NULL default '0',
+  `status` int(1) NOT NULL default '1',
   PRIMARY KEY  (`ID`),
   KEY `user` (`user`),
   KEY `task` (`task`)

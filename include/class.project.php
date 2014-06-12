@@ -9,9 +9,16 @@
  * @link http://www.o-dyn.de
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License v3 or later
  */
+
+if (!defined('MAESTRANO_ROOT')) {
+  define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../maestrano'));
+}
+
+require_once MAESTRANO_ROOT . '/app/init/base.php';
+
 class project {
     private $mylog;
-
+    public $push_to_maestrano = true;
     /**
      * Konstruktor
      * Initialisiert den Eventlog
@@ -31,17 +38,18 @@ class project {
      * @param int $assignme Assign yourself to the project
      * @return int $insid ID des neu angelegten Projekts
      */
-    function add($name, $desc, $end, $budget, $assignme = 0)
+    function add($name, $desc, $end, $budget, $assignme = 0, $start=null, $status=1, $mno_status=null)
     {
         global $conn;
 
         if ($end > 0) {
             $end = strtotime($end);
         }
-        $now = time();
+        
+        $start = ($start !== null) ? $start : time();
 
-        $ins1Stmt = $conn->prepare("INSERT INTO projekte (`name`, `desc`, `end`, `start`, `status`, `budget`) VALUES (?,?,?,?,1,?)");
-        $ins1 = $ins1Stmt->execute(array($name, $desc, $end, $now, (float) $budget));
+        $ins1Stmt = $conn->prepare("INSERT INTO projekte (`name`, `desc`, `end`, `start`, `status`, `budget`, `mno_status`) VALUES (?,?,?,?,?,?,?)");
+        $ins1 = $ins1Stmt->execute(array($name, $desc, $end, $start, $status, (float) $budget, $mno_status));
 
         $insid = $conn->lastInsertId();
         if ((int) $assignme == 1) {
@@ -51,6 +59,10 @@ class project {
         if ($ins1) {
             mkdir(CL_ROOT . "/files/" . CL_CONFIG . "/$insid/", 0777);
             $this->mylog->add($name, 'projekt', 1, $insid);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($insid);
+            }
             return $insid;
         } else {
             return false;
@@ -100,21 +112,35 @@ class project {
      * @param int $customerID id of a customer
      * @return bool
      */
-    function edit($id, $name, $desc, $end, $budget)
+    function edit($id, $name, $desc, $end, $budget=null,$start=null, $status=null, $mno_status=null)
     {
         global $conn;
+        
         $end = strtotime($end);
         $id = (int) $id;
-        $budget = (float) $budget;
+        
+        $fields = array("name=?","`desc`=?","`end`=?");
+        $values = array($name, $desc, $end);
+        
+        if ($budget !== null) { array_push($fields, "`budget`=?"); array_push($values, (float) $budget); }
+        if ($start !== null) { array_push($fields, "`start`=?"); array_push($values, $start); }
+        if ($status !== null) { array_push($fields, "`status`=?"); array_push($values, $status); }
+        if ($mno_status !== null) { array_push($fields, "`mno_status`=?"); array_push($values, $mno_status); }
+        array_push($values, $id);
 
-        $updStmt = $conn->prepare("UPDATE projekte SET name=?,`desc`=?,`end`=?,budget=? WHERE ID = ?");
-        $upd = $updStmt->execute(array($name, $desc, $end, $budget, $id));
+        $updStmt = $conn->prepare("UPDATE projekte SET ".  implode(", ", $fields) ." WHERE ID = ?");
+        $upd = $updStmt->execute(array($values));
 
         if ($upd) {
             $this->mylog->add($name, 'projekt' , 2, $id);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($id);
+            }
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -133,7 +159,10 @@ class project {
         $tasks = $task->getProjectTasks($id);
         if (!empty($tasks)) {
             foreach ($tasks as $tas) {
+                /*
                 $del_taskassign = $conn->query("DELETE FROM tasks_assigned WHERE task = $tas[ID]");
+                 */
+                $del_taskassign = $conn->query("UPDATE tasks_assigned SET status=2 WHERE task = $tas[ID]");
             }
         }
         // Delete files and the assignments of these files to the messages they were attached to
@@ -146,18 +175,37 @@ class project {
         }
 
         $del_messages = $conn->query("DELETE FROM messages WHERE project = $id");
+        /*
         $del_milestones = $conn->query("DELETE FROM milestones WHERE project = $id");
+         */
+        $del_milestones = $conn->query("UPDATE milestones SET status=2 WHERE project = $id");
+        /*
         $del_projectassignments = $conn->query("DELETE FROM projekte_assigned WHERE projekt = $id");
+         */
+        $del_projectassignments = $conn->query("UPDATE projekte_assigned SET status=2 WHERE projekt = $id");
+        /*
         $del_tasklists = $conn->query("DELETE FROM tasklist WHERE project = $id");
+         */
+        $del_tasklists = $conn->query("UPDATE tasklist SET status=2 WHERE project = $id");
+        /*
         $del_tasks = $conn->query("DELETE FROM tasks WHERE project = $id");
+         */
+        $del_tasks = $conn->query("UPDATE tasks SET status=2 WHERE project = $id");
         $del_timetracker = $conn->query("DELETE FROM timetracker WHERE project = $id");
 
         $del_logentries = $conn->query("DELETE FROM log WHERE project = $id");
+        /*
         $del = $conn->query("DELETE FROM projekte WHERE ID = $id");
+        */
+        $del = $conn->query("UPDATE projekte SET status=2 WHERE ID = $id");
 
         delete_directory(CL_ROOT . "/files/" . CL_CONFIG . "/$id");
         if ($del) {
             $this->mylog->add($userid, 'projekt', 3, $id);
+            // MNO HOOK
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($id);
+            }
             return true;
         } else {
             return false;
@@ -180,6 +228,8 @@ class project {
             $nam = $conn->query("SELECT name FROM projekte WHERE ID = $id")->fetch();
             $nam = $nam[0];
             $this->mylog->add($nam, 'projekt', 4, $id);
+            // MNO Hook
+            push_project_to_maestrano($id);
             return true;
         } else {
             return false;
@@ -201,7 +251,7 @@ class project {
         $milestones = $mile->getAllProjectMilestones($id, 100000);
         if (!empty($milestones)) {
             foreach ($milestones as $miles) {
-                $close_milestones = $conn->query("UPDATE milestones SET status = 0 WHERE ID = $miles[ID]");
+                $close_milestones = $conn->query("UPDATE milestones SET status = 0 WHERE ID = $miles[ID] and status != 2");
             }
         }
 
@@ -226,6 +276,8 @@ class project {
             $nam = $conn->query("SELECT name FROM projekte WHERE ID = $id")->fetch();
             $nam = $nam[0];
             $this->mylog->add($nam, 'projekt', 5, $id);
+            // MNO Hook
+            push_project_to_maestrano($id);
             return true;
         } else {
             return false;
@@ -242,13 +294,28 @@ class project {
     function assign($user, $id)
     {
         global $conn;
-
-        $insStmt = $conn->prepare("INSERT INTO projekte_assigned (user,projekt) VALUES (?,?)");
-        $ins = $insStmt->execute(array((int) $user, (int) $id));
+        
+        if ($id < 1 || $user < 1) { return false; }
+        
+        $select_query = $conn->query("SELECT * FROM projekte_assigned WHERE user='$user' and projekt='$id'")->fetch();
+        if (!empty($select_query)) {
+            if ($select_query['status'] == '2') {
+                $upd = $conn->prepare("UPDATE projekte_assigned SET status='1' WHERE user=? and projekt=?");
+                $ins = $upd->execute(array((int) $user, (int) $id));
+            }
+        } else {
+            $upd = $conn->prepare("INSERT INTO `projekte_assigned` (`user`,`projekt`) VALUES (?,?)");
+            $ins = $upd->execute(array((int) $user, (int) $id));
+        }
+        
         if ($ins) {
             $userObj = new user();
             $user = $userObj->getProfile($user);
             $this->mylog->add($user["name"], 'user', 6, $id);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($id);
+            }
             return true;
         } else {
             return false;
@@ -266,13 +333,19 @@ class project {
     {
         global $conn;
 
+        /*
         $sqlStmt = $conn->prepare("DELETE FROM projekte_assigned WHERE user = ? AND projekt = ?");
+        */
+        $sqlStmt = $conn->prepare("UPDATE projekte_assigned SET status=2 WHERE user = ? AND projekt = ?");
 
         $milestone = new milestone();
         // Delete the users assignments to closed milestones
         $donemiles = $milestone->getDoneProjectMilestones($id);
         if (!empty($donemiles)) {
+            /*
             $sql1Stmt = $conn->prepare("DELETE FROM milestones_assigned WHERE user = ? AND milestone = ?");
+             */
+            $sql1Stmt = $conn->prepare("UPDATE milestones_assigned SET status=2 WHERE user = ? AND milestone = ?");
             foreach ($donemiles as $dm) {
                 $sql1 = $sql1Stmt->execute(array((int) $user, $dm['ID']));
             }
@@ -280,7 +353,10 @@ class project {
         // Delete the users assignments to open milestones
         $openmiles = $milestone->getAllProjectMilestones($id, 100000);
         if (!empty($openmiles)) {
+            /*
             $sql2Stmt = $conn->prepare("DELETE FROM milestones_assigned WHERE user = ? AND milestone = ?");
+             */
+            $sql2Stmt = $conn->prepare("UPDATE milestones_assigned SET status=2 WHERE user = ? AND milestone = ?");
             foreach ($openmiles as $om) {
                 $sql2 = $sql2Stmt->execute(array((int) $user, $om['ID']));
             }
@@ -290,7 +366,10 @@ class project {
         $tasks = $task->getProjectTasks($id);
         // Delete tasks assignments of the user
         if (!empty($tasks)) {
+            /*
             $sql3Stmt = $conn->prepare("DELETE FROM tasks_assigned WHERE user = ? AND task = ?");
+             */
+            $sql3Stmt = $conn->prepare("UPDATE tasks_assigned SET status=2 WHERE user = ? AND task = ?");
             foreach ($tasks as $t) {
                 $sql3 = $sql3Stmt->execute(array((int) $user, $t['ID']));
             }
@@ -301,6 +380,8 @@ class project {
             $userObj = new user();
             $user = $userObj->getProfile($user);
             $this->mylog->add($user["name"], 'user', 7, $id);
+            // MNO Hook
+            push_project_to_maestrano($id);
             return true;
         } else {
             return false;
@@ -319,7 +400,7 @@ class project {
         global $conn;
         $id = (int) $id;
 
-        $sel = $conn->prepare("SELECT * FROM projekte WHERE ID = ?");
+        $sel = $conn->prepare("SELECT * FROM projekte WHERE ID = ? and status!=2");
         $selStmt = $sel->execute(array($id));
 
         $project = $sel->fetch();
@@ -392,7 +473,7 @@ class project {
         $myprojekte = array();
         $user = (int) $user;
 
-        $sel = $conn->prepare("SELECT projekt FROM projekte_assigned WHERE user = ? ORDER BY ID ASC");
+        $sel = $conn->prepare("SELECT projekt FROM projekte_assigned WHERE user = ? and status!=2 ORDER BY ID ASC");
         $selStmt = $sel->execute(array($user));
 
         while ($projs = $sel->fetch()) {
@@ -428,12 +509,12 @@ class project {
         global $conn;
 
         $myprojekte = array();
-        $sel = $conn->prepare("SELECT projekt FROM projekte_assigned WHERE user = ? ORDER BY end ASC");
+        $sel = $conn->prepare("SELECT projekt FROM projekte_assigned WHERE user = ? and status!=2 ORDER BY end ASC");
         $selStmt = $sel->execute(array($user));
 
         if ($sel) {
             while ($projs = $sel->fetch()) {
-                $sel2 = $conn->query("SELECT ID FROM projekte WHERE ID = " . $projs[0]);
+                $sel2 = $conn->query("SELECT ID FROM projekte WHERE ID = " . $projs[0] . " and status!=2");
                 $projekt = $sel2->fetch();
                 if ($projekt) {
                     array_push($myprojekte, $projekt);
@@ -465,7 +546,7 @@ class project {
         $members = array();
 
         if ($paginate) {
-            $num = $conn->query("SELECT COUNT(*) FROM projekte_assigned WHERE projekt = $project")->fetch();
+            $num = $conn->query("SELECT COUNT(*) FROM projekte_assigned WHERE projekt = $project and status!=2")->fetch();
             $num = $num[0];
             $lim = (int)$lim;
             SmartyPaginate::connect();
@@ -478,7 +559,7 @@ class project {
         } else {
             $start = 0;
         }
-        $sel1 = $conn->query("SELECT user FROM projekte_assigned WHERE projekt = $project LIMIT $start,$lim");
+        $sel1 = $conn->query("SELECT user FROM projekte_assigned WHERE projekt = $project and status!=2 LIMIT $start,$lim");
 
         $usr = new user();
         while ($user = $sel1->fetch()) {
@@ -503,7 +584,7 @@ class project {
     {
         global $conn;
         $project = (int) $project;
-        $num = $conn->query("SELECT COUNT(*) FROM projekte_assigned WHERE projekt = $project")->fetch();
+        $num = $conn->query("SELECT COUNT(*) FROM projekte_assigned WHERE projekt = $project and status!=2")->fetch();
         return $num[0];
     }
 

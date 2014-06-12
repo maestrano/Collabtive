@@ -172,7 +172,7 @@ class tags {
         $files = array();
         while ($result = $sel->fetch()) {
             if (!empty($result)) {
-                $project = $conn->query("SELECT name FROM projekte WHERE ID = $result[project]")->fetch();
+                $project = $conn->query("SELECT name FROM projekte WHERE ID = $result[project] and status!=2")->fetch();
                 $project = $project[0];
 
                 $result["pname"] = $project;
@@ -225,7 +225,7 @@ class tags {
         $messages = array();
         while ($result = $sel->fetch()) {
             if (!empty($result)) {
-                $project = $conn->query("SELECT name FROM projekte WHERE ID = $result[project]")->fetch();
+                $project = $conn->query("SELECT name FROM projekte WHERE ID = $result[project] and status!=2")->fetch();
                 $project = $project[0];
 
                 $result["pname"] = $project;

@@ -208,9 +208,18 @@ class user {
         $name = $chk[0];
 
         $del = $conn->query("DELETE FROM user WHERE ID = $id");
+        /*
         $del2 = $conn->query("DELETE FROM projekte_assigned WHERE user = $id");
+         */
+        $del2 = $conn->query("UPDATE projekte_assigned SET status=2 WHERE user = $id");
+        /*
         $del3 = $conn->query("DELETE FROM milestones_assigned WHERE user = $id");
+         */
+        $del3 = $conn->query("UPDATE milestones_assigned SET status=2 WHERE user = $id");
+        /*
         $del4 = $conn->query("DELETE FROM tasks_assigned WHERE user = $id");
+         */
+        $del4 = $conn->query("UPDATE tasks_assigned SET status=2 WHERE user = $id");
         $del5 = $conn->query("DELETE FROM log WHERE user = $id");
         $del6 = $conn->query("DELETE FROM timetracker WHERE user = $id");
         $del7 = $conn->query("DELETE FROM roles_assigned WHERE user = $id");

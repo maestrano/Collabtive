@@ -9,8 +9,16 @@
  * @link http://www.o-dyn.de
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License v3 or later
  */
+
+if (!defined('MAESTRANO_ROOT')) {
+  define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../maestrano'));
+}
+
+require_once MAESTRANO_ROOT . '/app/init/base.php';
+
 class tasklist {
     public $mylog;
+    public $push_to_maestrano = true;
 
     /**
      * Constructor
@@ -31,16 +39,22 @@ class tasklist {
      * @param int $milestone ID of the associated milestone (0 = no association)
      * @return bool
      */
-    function add_liste($project, $name, $desc, $access = 0, $milestone = 0)
+    function add_liste($project, $name, $desc, $access = 0, $milestone = 0, $start=0, $status=1, $mno_status=null)
     {
         global $conn;
-
-        $insStmt = $conn->prepare("INSERT INTO tasklist (`project`, `name`, `desc`, `start`, `status`, `access`, `milestone`) VALUES (?, ?, ?, ?, 1, ?, ?)");
-        $ins = $insStmt->execute(array((int) $project, $name, $desc, time(), (int) $access, (int) $milestone));
+        
+        $start = ($start === 0) ? time() : $start;
+        
+        $insStmt = $conn->prepare("INSERT INTO tasklist (`project`, `name`, `desc`, `start`, `status`, `access`, `milestone`, `mno_status`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $ins = $insStmt->execute(array((int) $project, $name, $desc, $start, $status, (int) $access, (int) $milestone, $mno_status));
 
         if ($ins) {
             $insid = $conn->lastInsertId();
             $this->mylog->add($name, 'tasklist', 1, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return $insid;
         } else {
             return false;
@@ -56,17 +70,47 @@ class tasklist {
      * @param int $milestone ID of the associated milestone
      * @return bool
      */
-    function edit_liste($id, $name, $desc, $milestone)
+    function edit_liste($id, $name=null, $desc=null, $milestone=null, $access=null, $start=null, $status=null, $project=null, $mno_status=null)
     {
         global $conn;
-
-        $updStmt = $conn->prepare("UPDATE tasklist SET `name` = ?, `desc` = ?, `milestone` = ? WHERE ID = ?");
-        $upd = $updStmt->execute(array($name, $desc, $milestone, $id));
+        
+        $fields = array();
+        if ($name !== null) { array_push($fields, "`name` = ? "); }
+        if ($desc !== null) { array_push($fields, "`desc` = ? "); }
+        if ($milestone !== null) { array_push($fields, "`milestone` = ? "); }
+        if ($access !== null) { array_push($fields, "`access` = ? "); }
+        if ($start !== null) { array_push($fields, "`start` = ? "); }
+        if ($status !== null) { array_push($fields, "`status` = ? "); }
+        if ($project !== null) { array_push($fields, "`project` = ? "); }
+        if ($mno_status !== null) { array_push($fields, "`mno_status` = ? "); }
+        
+        if (empty($fields)) return true;
+        
+        $fields = implode(",", $fields);
+        
+        $updStmt = $conn->prepare("UPDATE tasklist SET ". $fields ." WHERE ID = ?");
+        
+        $values = array();
+        if ($name !== null) { array_push($values, $name); }
+        if ($desc !== null) { array_push($values, $desc); }
+        if ($milestone !== null) { array_push($values, $milestone); }
+        if ($access !== null) { array_push($values, $access); }
+        if ($start !== null) { array_push($values, $start); }
+        if ($status !== null) { array_push($values, $status); }
+        if ($project !== null) { array_push($values, $project); }
+        if ($mno_status !== null) { array_push($values, $mno_status); }
+        array_push($values, $id);        
+        
+        $upd = $updStmt->execute($values);
         if ($upd) {
             $proj = $conn->query("SELECT project FROM tasklist WHERE ID = $id")->fetch();
             $proj = $proj[0];
 
             $this->mylog->add($name, 'tasklist', 2, $proj);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($proj);
+            }
             return true;
         } else {
             return false;
@@ -85,7 +129,10 @@ class tasklist {
         $id = (int) $id;
 
         $sel = $conn->query("SELECT project, name FROM tasklist WHERE ID = $id");
+        /*
         $del = $conn->query("DELETE FROM tasklist WHERE ID = $id LIMIT 1");
+         */
+        $del = $conn->query("UPDATE tasklist SET status=2 WHERE ID = $id");
         if ($del) {
             $tasks1 = $this->getTasksFromList($id);
             $taskobj = new task();
@@ -104,6 +151,11 @@ class tasklist {
             $proj = $sel1[0];
             $name = $sel1[1];
             $this->mylog->add($name, 'tasklist', 3, $proj);
+            // MNO HOOK            
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($proj);
+            }
+            
             return true;
         } else {
             return false;
@@ -129,6 +181,10 @@ class tasklist {
             $name = $nam[1];
 
             $this->mylog->add($name, 'tasklist', 4, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return true;
         } else {
             return false;
@@ -152,7 +208,7 @@ class tasklist {
 
         if ($closeMilestones) {
             // Close assigned milestone too, if no other open tasklists are assigned to it
-            $milestone = $conn->query("SELECT milestone FROM tasklist WHERE ID = $id")->fetch();
+            $milestone = $conn->query("SELECT milestone FROM tasklist WHERE ID = $id and status!=2")->fetch();
             if ($milestone[0] > 0) {
                 $cou = $conn->query("SELECT count(*) FROM tasklist WHERE milestone = $milestone[0] AND status = 1")->fetch();
 
@@ -177,6 +233,10 @@ class tasklist {
             $name = $nam[1];
 
             $this->mylog->add($name, 'tasklist', 5, $project);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($project);
+            }
             return true;
         } else {
             return false;
@@ -234,7 +294,7 @@ class tasklist {
     {
         global $conn;
 
-        $selStmt = $conn->prepare("SELECT * FROM `tasklist` WHERE ID = ?");
+        $selStmt = $conn->prepare("SELECT * FROM `tasklist` WHERE ID = ? and status!=2");
         $sel = $selStmt->execute(array($id));
         // $sel = $conn->query("SELECT * FROM tasklist WHERE ID = $id");
         $tasklist = $selStmt->fetch();

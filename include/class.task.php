@@ -10,8 +10,15 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License v3 or later
  */
 
+if (!defined('MAESTRANO_ROOT')) {
+  define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . '/../maestrano'));
+}
+
+require_once MAESTRANO_ROOT . '/app/init/base.php';
+
 class task {
     private $mylog;
+    public $push_to_maestrano = true;
 
     /**
      * Constructor
@@ -33,7 +40,7 @@ class task {
      * @param int $project ID of the project the task is associated with
      * @return int $insid New task's ID
      */
-    function add($end, $title, $text, $liste, $project)
+    function add($end, $title, $text, $liste, $project, $start=null, $status=null, $mno_status=null)
     {
         global $conn;
         $liste = (int) $liste;
@@ -45,15 +52,20 @@ class task {
             $end_fin = $end;
         }
 
-        $start = time();
+        $start = ($start===null) ? time() : $start;
+        $status = ($status===null) ? 1 : 0;
         // write to db
-        $insStmt = $conn->prepare("INSERT INTO tasks (start,end,title,text,liste,status,project) VALUES (?, ?, ?, ?, ?, 1, ?)");
-        $ins = $insStmt->execute(array($start, $end_fin, $title, $text, $liste, $project));
+        $insStmt = $conn->prepare("INSERT INTO tasks (start,end,title,text,liste,status,project,mno_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $ins = $insStmt->execute(array($start, $end_fin, $title, $text, $liste, $status, $project, $mno_status));
         if ($ins) {
             $insid = $conn->lastInsertId();
             // logentry
             $nameproject = $this->getNameProject($insid);
             $this->mylog->add($nameproject[0], 'task', 1, $nameproject[1]);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($nameproject[1]);
+            }
             return $insid;
         } else {
             return false;
@@ -71,7 +83,7 @@ class task {
      * @param int $assigned ID of the user who has to complete the task
      * @return bool
      */
-    function edit($id, $end, $title, $text, $liste)
+    function edit($id, $end, $title, $text, $liste, $start=null, $status=null, $project=null, $mno_status=null)
     {
         global $conn;
         $id = (int) $id;
@@ -79,15 +91,29 @@ class task {
 
         $end = strtotime($end);
 
-        $updStmt = $conn->prepare("UPDATE tasks SET `end`=?,`title`=?, `text`=?, `liste`=? WHERE ID = ?");
+        $fields = "`end`=?,`title`=?, `text`=?, `liste`=? ";
+        $values = array($end, $title, $text, $liste);
+        if ($start!==null) { $fields .= "`start`=? "; array_push($values, $start); }
+        if ($status!==null) { $fields .= "`status`=? "; array_push($values, $status); }
+        if ($project!==null) { $fields .= "`project`=? "; array_push($values, $project); }
+        if ($mno_status!==null) { $fields .= "`mno_status`=? "; array_push($values, $mno_status); }
+        array_push($values, $id);
+        
+        $updStmt = $conn->prepare("UPDATE tasks SET " . $fields . " WHERE ID = ?");
         // Remove all the users from the task. Done to ensure no double assigns occur since the handler scripts call this::assign() on their own.
-        $conn->query("DELETE FROM tasks_assigned WHERE `task` = $id");
-
-        $upd = $updStmt->execute(array($end, $title, $text, $liste, $id));
+        /* $conn->query("DELETE FROM tasks_assigned WHERE `task` = $id");
+         */
+        $conn->query("UPDATE tasks_assigned SET status='2' WHERE `task` = '$id'");
+        
+        $upd = $updStmt->execute($values);
 
         if ($upd) {
             $nameproject = $this->getNameProject($id);
             $this->mylog->add($nameproject[0], 'task', 2, $nameproject[1]);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($nameproject[1]);
+            }
             return true;
         } else {
             return false;
@@ -106,10 +132,20 @@ class task {
         $id = (int) $id;
 
         $nameproject = $this->getNameProject($id);
+        /*
         $del = $conn->query("DELETE FROM tasks WHERE ID = $id LIMIT 1");
+         */
+        $del = $conn->query("UPDATE tasks SET status=2 WHERE ID = $id");
         if ($del) {
+            /*
             $del2 = $conn->query("DELETE FROM tasks_assigned WHERE task=$id");
+             */
+            $del2 = $conn->query("UPDATE tasks_assigned SET status=2 WHERE task=$id");
             $this->mylog->add($nameproject[0], 'task', 3, $nameproject[1]);
+            // MNO HOOK
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($nameproject[1]);
+            }
             return true;
         } else {
             return false;
@@ -131,6 +167,10 @@ class task {
         if ($upd) {
             $nameproject = $this->getNameProject($id);
             $this->mylog->add($nameproject[0], 'task', 4, $nameproject[1]);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($nameproject[1]);
+            }
             return true;
         } else {
             return false;
@@ -166,6 +206,10 @@ class task {
         if ($upd) {
             $nameproject = $this->getNameProject($id);
             $this->mylog->add($nameproject[0], 'task', 5, $nameproject[1]);
+            // MNO Hook
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($nameproject[1]);
+            }
             return true;
         } else {
             return false;
@@ -182,11 +226,28 @@ class task {
     function assign($task, $id)
     {
         global $conn;
+        
         $task = (int) $task;
         $id = (int) $id;
+        
+        if ($id < 1) { return false; }
 
-        $upd = $conn->query("INSERT INTO tasks_assigned (user,task) VALUES ($id,$task)");
+        $select_query = $conn->query("SELECT * FROM tasks_assigned WHERE user='$id' and task='$task'")->fetch();
+        if (!empty($select_query)) {
+            if ($select_query['status'] == '2') {
+                $upd = $conn->query("UPDATE tasks_assigned SET status='1' WHERE user='$id' and task='$task'");
+            }
+        } else {
+            $upd = $conn->query("INSERT INTO tasks_assigned (user,task)
+                             VALUES ('$id','$task')");
+        }
+        
         if ($upd) {
+            // MNO Hook
+            $nameproject = $this->getNameProject($task);
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($nameproject[1]);
+            }
             return true;
         } else {
             return false;
@@ -206,8 +267,16 @@ class task {
         $task = (int) $task;
         $id = (int) $id;
 
+        /*
         $upd = $conn->query("DELETE FROM tasks_assigned WHERE user = $id AND task = $task");
+         */
+        $upd = $conn->query("UPDATE tasks_assigned SET status=2 WHERE user = $id AND task = $task");
         if ($upd) {
+            // MNO Hook
+            $nameproject = $this->getNameProject($task);
+            if ($this->push_to_maestrano) {
+                push_project_to_maestrano($nameproject[1]);
+            }
             return true;
         } else {
             return false;
@@ -225,7 +294,7 @@ class task {
         global $conn;
         $id = (int) $id;
 
-        $task = $conn->query("SELECT * FROM tasks WHERE ID = $id")->fetch();
+        $task = $conn->query("SELECT * FROM tasks WHERE ID = $id and status!=2")->fetch();
         if (!empty($task)) {
             // format datestring according to dateformat option
             if (is_numeric($task['end'])) {
@@ -240,7 +309,7 @@ class task {
             // get remainig days until due date
             $tage = $this->getDaysLeft($task['end']);
             // Get the user(s) assigned to the task from the db
-            $usel = $conn->query("SELECT user FROM tasks_assigned WHERE task = $task[ID]");
+            $usel = $conn->query("SELECT user FROM tasks_assigned WHERE task = $task[ID] and status!=2");
             $users = array();
             while ($usr = $usel->fetch()) {
                 // push the assigned users to an array
@@ -299,8 +368,9 @@ class task {
         if ($status !== false) {
             $sel2 = $conn->query("SELECT ID FROM tasks WHERE project = $project AND status=$status");
         } else {
-            $sel2 = $conn->query("SELECT ID FROM tasks WHERE project = $project");
-        } while ($tasks = $sel2->fetch()) {
+            $sel2 = $conn->query("SELECT ID FROM tasks WHERE project = $project AND status!=2");
+        } 
+        while ($tasks = $sel2->fetch()) {
             $task = $this->getTask($tasks["ID"]);
             array_push($lists, $task);
         }
@@ -332,7 +402,7 @@ class task {
         $sel2 = $conn->query("SELECT ID FROM tasks WHERE project = $project AND status=1 AND end > $now ORDER BY `end` ASC LIMIT $limit");
 
         while ($tasks = $sel2->fetch()) {
-            $chk = $conn->query("SELECT ID FROM tasks_assigned WHERE user = $user AND task = $tasks[ID]")->fetch();
+            $chk = $conn->query("SELECT ID FROM tasks_assigned WHERE user = $user AND task = $tasks[ID] AND status!=2")->fetch();
             $chk = $chk[0];
             if ($chk) {
                 $task = $this->getTask($tasks["ID"]);
@@ -400,7 +470,7 @@ class task {
         $tod = date("d.m.Y");
         $now = strtotime($tod);
 
-        $sel2 = $conn->query("SELECT tasks.*,tasks_assigned.user FROM tasks,tasks_assigned WHERE tasks.ID = tasks_assigned.task HAVING tasks_assigned.user = $user AND tasks.project = $project  AND status=1 AND end < $now ORDER BY `end` ASC LIMIT $limit");
+        $sel2 = $conn->query("SELECT tasks.*,tasks_assigned.user FROM tasks,tasks_assigned WHERE tasks.ID = tasks_assigned.task HAVING tasks_assigned.user = $user AND tasks.project = $project  AND tasks.status=1 AND tasks_assigned.status=1 AND end < $now ORDER BY `end` ASC LIMIT $limit");
         while ($tasks = $sel2->fetch()) {
             $task = $this->getTask($tasks["ID"]);
             array_push($lists, $task);
@@ -431,7 +501,14 @@ class task {
         $lists = array();
         $now = strtotime($tod);
 
-        $sel2 = $conn->query("SELECT tasks.*,tasks_assigned.user FROM tasks,tasks_assigned WHERE tasks.ID = tasks_assigned.task HAVING tasks_assigned.user = $user AND tasks.project = $project  AND status=1 AND end = '$now' ORDER BY `end` ASC LIMIT $limit");
+        $sel2 = $conn->query("SELECT tasks.*,tasks_assigned.user "
+                           . "FROM tasks,tasks_assigned "
+                           . "WHERE tasks.ID = tasks_assigned.task "
+                                . "AND tasks.status=1 "
+                                . "AND tasks_assigned.status=1 "
+                           . "HAVING tasks_assigned.user = $user "
+                                . "AND tasks.project = $project  "
+                                . "AND end = '$now' ORDER BY `end` ASC LIMIT $limit");
 
         while ($tasks = $sel2->fetch()) {
             $task = $this->getTask($tasks["ID"]);
@@ -462,7 +539,14 @@ class task {
         $lists = array();
         $now = time();
 
-        $sel2 = $conn->query("SELECT tasks.*,tasks_assigned.user FROM tasks,tasks_assigned WHERE tasks.ID = tasks_assigned.task HAVING tasks_assigned.user = $user AND tasks.project = $project AND status=0 ORDER BY `end` ASC LIMIT $limit");
+        $sel2 = $conn->query("SELECT tasks.*,tasks_assigned.user "
+                           . "FROM tasks,tasks_assigned "
+                           . "WHERE tasks.ID = tasks_assigned.task "
+                                . "AND tasks.status=0 "
+                                . "AND tasks_assigned.status=1 "
+                           . "HAVING tasks_assigned.user = $user "
+                                . "AND tasks.project = $project "
+                           . "ORDER BY `end` ASC LIMIT $limit");
 
         while ($tasks = $sel2->fetch()) {
             $task = $this->getTask($tasks["ID"]);
@@ -504,7 +588,14 @@ class task {
         if ($project > 0) {
             $sql = "SELECT * FROM tasks  WHERE status=1 AND project = $project AND end = '$starttime'";
         } else {
-            $sql = "SELECT tasks.*,tasks_assigned.user,projekte.name AS pname FROM tasks,tasks_assigned,projekte WHERE tasks.ID = tasks_assigned.task AND tasks.project = projekte.ID HAVING tasks_assigned.user = $user AND status=1 AND end = '$starttime'";
+            $sql = "SELECT tasks.*,tasks_assigned.user,projekte.name AS pname "
+                 . "FROM tasks,tasks_assigned,projekte "
+                 . "WHERE tasks.ID = tasks_assigned.task "
+                    . "AND tasks.project = projekte.ID "
+                    . "AND tasks.status=1 "
+                    . "AND tasks_assigned.status=1 "
+                 . "HAVING tasks_assigned.user = $user "
+                    . "AND end = '$starttime'";
         }
         $sel1 = $conn->query($sql);
 
@@ -531,7 +622,7 @@ class task {
         global $conn;
         $id = (int) $id;
 
-        $user = $conn->query("SELECT user FROM tasks_assigned WHERE task = $id")->fetch();
+        $user = $conn->query("SELECT user FROM tasks_assigned WHERE task = $id and status=1")->fetch();
 
         if (!empty($user)) {
             $uname = $conn->query("SELECT name FROM user WHERE ID = $user[0]")->fetch();
@@ -555,7 +646,7 @@ class task {
         global $conn;
         $id = (int) $id;
 
-        $sql = $conn->query("SELECT user FROM tasks_assigned WHERE task = $id");
+        $sql = $conn->query("SELECT user FROM tasks_assigned WHERE task = $id and status=1");
 
         $result = array();
         while ($user = $sql->fetch()) {
@@ -649,11 +740,11 @@ class task {
     private function getTaskDetails(array $task)
     {
         global $conn;
-        $psel = $conn->query("SELECT name FROM projekte WHERE ID = $task[project]");
+        $psel = $conn->query("SELECT name FROM projekte WHERE ID = $task[project] and status!=2");
         $pname = $psel->fetch();
         $pname = stripslashes($pname[0]);
 
-        $list = $conn->query("SELECT name FROM tasklist WHERE ID = $task[liste]")->fetch();
+        $list = $conn->query("SELECT name FROM tasklist WHERE ID = $task[liste] and status!=2")->fetch();
         $list = stripslashes($list[0]);
 
         if (isset($list) or isset($pname)) {
@@ -693,10 +784,10 @@ class task {
         global $conn;
         $id = (int) $id;
 
-        $nam = $conn->query("SELECT text,liste,title FROM tasks WHERE ID = $id")->fetch();
+        $nam = $conn->query("SELECT text,liste,title FROM tasks WHERE ID = $id and status!=2")->fetch();
         $text = stripslashes($nam[2]);
         $list = $nam[1];
-        $project = $conn->query("SELECT project FROM tasklist WHERE ID = $list")->fetch();
+        $project = $conn->query("SELECT project FROM tasklist WHERE ID = $list and status!=2")->fetch();
         $project = $project[0];
         $nameproject = array($text, $project);
 
