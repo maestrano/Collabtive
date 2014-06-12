@@ -111,7 +111,10 @@ class MnoSoaProject extends MnoSoaBaseProject
             if (empty($mno_user_id) || $status === null) { continue; }
             $stakeholders->{$mno_user_id} = $status;
         }
-        $this->_stakeholders = $stakeholders;
+        
+        if (!empty($stakeholders)) {
+            $this->_stakeholders = $stakeholders;
+        }
     }
     
     protected function pullStakeholders() 
@@ -170,7 +173,10 @@ class MnoSoaProject extends MnoSoaBaseProject
             
             $milestones->{$milestone_id->_id} = $mno_milestone;
         }
-        $this->_milestones = $milestones;
+        
+        if (!empty($milestones)) {
+            $this->_milestones = $milestones;
+        }
     }
     
     protected function pullMilestones() 
@@ -201,7 +207,7 @@ class MnoSoaProject extends MnoSoaBaseProject
                     
                     if ($ins1) {
                         $local_milestone_id = $conn->lastInsertId();
-                        MnoSoaDB::addIdMapEntry($local_milestone_id, "MILESTONES", $local_milestone_id, "MILESTONES");
+                        MnoSoaDB::addIdMapEntry($local_milestone_id, "MILESTONES", $mno_milestone_id, "MILESTONES");
                     }
                 }
             }
@@ -243,7 +249,9 @@ class MnoSoaProject extends MnoSoaBaseProject
             $tasklists->{$tasklist_id->_id} = $mno_tasklist;
         }
         
-        $this->_tasklists = $tasklists;
+        if (!empty($tasklists)) {
+            $this->_tasklists = $tasklists;
+        }
     }
     
     protected function pullTasklists() 
@@ -280,7 +288,7 @@ class MnoSoaProject extends MnoSoaBaseProject
                     $ins1 = $ins1Stmt->execute(array($this->_local_project_id, $name, $description, $start, $status, $milestone_id, $mno_status));
 
                     if ($ins1) {
-                        $local_milestone_id = $conn->lastInsertId();
+                        $local_tasklist_id = $conn->lastInsertId();
                         MnoSoaDB::addIdMapEntry($local_tasklist_id, "TASKLISTS", $mno_tasklist_id, "TASKLISTS");
                     }
                 }
@@ -339,7 +347,9 @@ class MnoSoaProject extends MnoSoaBaseProject
             $tasks->{$task_id->_id} = $mno_task;
         }
         
-        $this->_tasks = $tasks;
+        if (!empty($tasks)) {
+            $this->_tasks = $tasks;
+        }
     }
     
     protected function pullTasks() 
@@ -360,7 +370,7 @@ class MnoSoaProject extends MnoSoaBaseProject
                 $title = $this->pull_set_or_delete_value($task->name);
                 $text = $this->pull_set_or_delete_value($task->description);
                 $local_tasklist_id_obj = MnoSoaDB::getLocalIdByMnoId($task->tasklist, "TASKLISTS", "TASKLISTS");
-                $local_tasklist_id = (MnoSoaDB::isValidIdentifier($local_tasklist_id_obj)) ? $local_tasklist_id->_id : 0;
+                $local_tasklist_id = (MnoSoaDB::isValidIdentifier($local_tasklist_id_obj)) ? $local_tasklist_id_obj->_id : 0;
                 $status = $this->map_project_status_to_local_format($task->status);
                 $mno_status = $this->pull_set_or_delete_value($task->status, null);
                 $local_project_id = $this->_local_project_id;
