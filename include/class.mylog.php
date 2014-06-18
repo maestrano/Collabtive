@@ -100,7 +100,7 @@ class mylog {
         $mylog = array();
         while ($log = $sel2->fetch()) {
             if (!empty($log)) {
-                $sel3 = $conn->query("SELECT name FROM projekte WHERE ID = $log[project]");
+                $sel3 = $conn->query("SELECT name FROM projekte WHERE ID = $log[project] and status!=2");
                 $proname = $sel3->fetch();
                 $proname = $proname[0];
                 $log["proname"] = $proname;
@@ -160,7 +160,7 @@ class mylog {
         $limit = (int) $limit;
 
         $mylog = array();
-        $sel3 = $conn->query("SELECT projekt FROM projekte_assigned WHERE user = $userid");
+        $sel3 = $conn->query("SELECT projekt FROM projekte_assigned WHERE user = $userid and status!=2");
         $prstring = "";
         while ($upro = $sel3->fetch()) {
             $projekt = $upro[0];
@@ -173,7 +173,7 @@ class mylog {
             $sel = $conn->query("SELECT * FROM log  WHERE project IN($prstring) OR project = 0 ORDER BY ID DESC LIMIT $limit");
 
             while ($log = $sel->fetch()) {
-                $sel2 = $conn->query("SELECT name FROM projekte WHERE ID = $log[project]");
+                $sel2 = $conn->query("SELECT name FROM projekte WHERE ID = $log[project] and status!=2");
                 $proname = $sel2->fetch();
                 $proname = $proname[0];
                 $log["proname"] = $proname;

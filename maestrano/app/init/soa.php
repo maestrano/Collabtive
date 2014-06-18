@@ -7,6 +7,8 @@ if (!defined('MAESTRANO_ROOT')) {
 }
 require_once MAESTRANO_ROOT . '/app/init/base.php';
 
+error_reporting(0);
+
 //-----------------------------------------------
 // Require your app specific files here
 //-----------------------------------------------
@@ -22,14 +24,19 @@ require_once CL_ROOT . '/config/standard/config.php';
 //-----------------------------------------------
 // Perform your custom preparation code
 //-----------------------------------------------
-// Set options to pass to the MnoSsoUser
-$opts = array();
+// If you define the $opts variable then it will
+// automatically be passed to the MnoSsoUser object
+// for construction
+// e.g:
+$conn = null;
+
 if (!empty($db_name) and !empty($db_user)) {
     // $tdb = new datenbank();
     $conn = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8", $db_user, $db_pass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
-    
-    $opts['db_connection'] = $conn;
 }
 
+MnoSoaDB::initialize($conn);
+MnoSoaLogger::initialize();
 
+?>

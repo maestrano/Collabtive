@@ -127,7 +127,7 @@ class message {
             $gender = $ds[0];
             $message["gender"] = $gender;
 
-            $project = $conn->query("SELECT name FROM projekte WHERE ID = $message[project]")->fetch();
+            $project = $conn->query("SELECT name FROM projekte WHERE ID = $message[project] and status!=2")->fetch();
             $message["pname"] = $project[0];
             $posted = date(CL_DATEFORMAT . " - H:i", $message["posted"]);
             $message["postdate"] = $posted;
@@ -198,7 +198,7 @@ class message {
         $limit = (int) $limit;
         // Get the id of the logged in user and get his projects
         $userid = $_SESSION["userid"];
-        $sel3 = $conn->query("SELECT projekt FROM projekte_assigned WHERE user = $userid");
+        $sel3 = $conn->query("SELECT projekt FROM projekte_assigned WHERE user = $userid and status!=2");
         // Assemble a string of project IDs the user belongs to for IN() query.
         $prstring = "";
         while ($upro = $sel3->fetch()) {
