@@ -31,6 +31,14 @@ class MnoSoaProject extends MnoSoaBaseProject
         $mno_project_id_obj = MnoSoaDB::getMnoIdByLocalId($this->_local_project_id, "PROJECTS", "PROJECTS");
         
         $this->_id = (MnoSoaDB::isValidIdentifier($mno_project_id_obj)) ? $mno_project_id_obj->_id : null;
+        
+        // IF INITIAL PUSH
+        if (empty($this->_id)) {
+            if (empty($_SESSION['userid'])) { return; }
+            $mno_project_owner_id = MnoSoaDB::getMnoUserIdByLocalUserId($_SESSION['userid']);
+            if (empty($mno_project_owner_id)) { return; }
+            $this->_project_owner = $mno_project_owner_id;
+        }
     }
     
     protected function pullProject() 
