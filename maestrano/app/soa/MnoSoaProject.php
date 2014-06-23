@@ -376,6 +376,7 @@ class MnoSoaProject extends MnoSoaBaseProject
                 $start = $this->map_date_to_local_format($task->startDate);
                 $end = $this->map_date_to_local_format($task->dueDate);
                 $title = $this->pull_set_or_delete_value($task->name);
+                $title = (empty($title)) ? "No title" : $title;
                 $text = $this->pull_set_or_delete_value($task->description);
                 $local_tasklist_id_obj = MnoSoaDB::getLocalIdByMnoId($task->tasklist, "TASKLISTS", "TASKLISTS");
                 $local_tasklist_id = (MnoSoaDB::isValidIdentifier($local_tasklist_id_obj)) ? $local_tasklist_id_obj->_id : 0;
