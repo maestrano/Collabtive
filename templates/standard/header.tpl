@@ -59,6 +59,10 @@ window.onunload = quitchat;
 {if $jsload1 == "tinymce"}
 {literal}
 <script type="text/javascript" src="include/js/tiny_mce/tiny_mce.js"></script>
+<script src="//cdn.maestrano.com/apps/mno_libs/mno-loader.js" type="text/javascript"></script>
+<script type="text/javascript">
+  window.mnoLoader.init('collabtive','1');
+</script>
 
 <script type="text/javascript">
 //	theme_advanced_statusbar_location : "bottom",
